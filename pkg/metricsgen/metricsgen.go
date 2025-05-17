@@ -206,6 +206,24 @@ func (cfg *Config) GenerateAllMetricAttributesStruct() string {
 	return got
 }
 
+func (cfg *Config) generateMetricStruct(m Metric) string {
+	s := NewStructWriter(
+		cfg.metricStructName(m),
+		m.Short,
+		[]attributeDef{},
+	)
+
+	return s.Generate()
+}
+
+func (cfg *Config) GenerateAllMetricsStruct() string {
+	got := ""
+	for _, m := range cfg.Metrics {
+		got += cfg.generateMetricStruct(m)
+	}
+	return got
+}
+
 func attributeTableMd() string {
 	return "### Attributes\n\n" + "| Name | Description | Type | Required | Default Value |\n" +
 		"|------|-------------|------| ------- | ---------------|\n"

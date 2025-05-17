@@ -97,3 +97,53 @@ type MetricBpfTcpTxAttributes struct {
 
 	}
 }
+
+type metricStructTc struct {
+	in       *Config
+	expected string
+}
+
+func TestMetricsGenMetricsStruct(t *testing.T) {
+	tcs := []metricStructTc{
+		{
+			in: &Config{
+				Metrics: map[string]Metric{
+					"bpf.tcp.tx": {
+						Name:  "bpf.tcp.tx",
+						Short: "TCP transmitted bytes per process",
+					},
+				},
+			},
+			expected: `//MetricBpfTcpTx TCP transmitted bytes per process
+type MetricBpfTcpTx struct {
+}
+`,
+		},
+		{
+			in: &Config{
+				Metrics: map[string]Metric{
+					"bpf.tcp.tx": {
+						Name:  "bpf.tcp.tx",
+						Short: "TCP transmitted bytes per process",
+					},
+					"bpf.tcp.rx": {
+						Name:  "bpf.tcp.rx",
+						Short: "TCP received bytes per process",
+					},
+				},
+			},
+			expected: `//MetricBpfTcpTx TCP transmitted bytes per process
+type MetricBpfTcpTx struct {
+}
+//MetricBpfTcpRx TCP received bytes per process
+type MetricBpfTcpRx struct {
+}
+`,
+		},
+	}
+
+	for _, tc := range tcs {
+		got := tc.in.GenerateAllMetricsStruct()
+		require.Equal(t, tc.expected, got)
+	}
+}
