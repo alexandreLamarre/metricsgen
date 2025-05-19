@@ -65,7 +65,7 @@ func (a Attribute) Validate() error {
 		return fmt.Errorf("attribute has an empty name")
 	}
 	if !slices.Contains(validAttributeTypes, a.Type) {
-		return fmt.Errorf("Invalid type : `%s`, must be one of %s", strings.Join(validAttributeTypes, ","))
+		return fmt.Errorf("invalid type : `%s`, must be one of %s", a.Type, strings.Join(validAttributeTypes, ","))
 	}
 	return nil
 }
