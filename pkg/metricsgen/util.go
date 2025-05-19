@@ -1,6 +1,7 @@
 package metricsgen
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 )
@@ -28,18 +29,6 @@ func OtelStringToCamelCase(input string) string {
 	return strings.Join(parts, "")
 }
 
-func ValueTypeToAttributeConstructor(input string) string {
-	switch input {
-	case "int":
-		return "Int"
-	case "float":
-		return "Float"
-	case "string":
-		return "String"
-	}
-	panic("unkown value type")
-}
-
 func OtelStringToPromLabel(input string) string {
 	var b strings.Builder
 	for _, r := range input {
@@ -55,4 +44,14 @@ func OtelStringToPromLabel(input string) string {
 	label := b.String()
 	label = strings.Trim(label, "_")
 	return label
+}
+
+func MarkdownLinkAnchor(header string) string {
+	anchor := strings.ToLower(header)
+	// Remove all non-alphanumeric characters except hyphens and spaces
+	re := regexp.MustCompile(`[^a-z0-9 -]`)
+	anchor = re.ReplaceAllString(anchor, "")
+	// Replace spaces with hyphens
+	anchor = strings.ReplaceAll(anchor, " ", "-")
+	return anchor
 }

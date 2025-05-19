@@ -1,7 +1,7 @@
 # Metrics
-- [bpf.tcp.connlat](#) : TCP connection latency ms
-- [bpf.tcp.rx](#) : TCP received bytes
-- [bpf.tcp.tx](#) : TCP transmitted bytes
+- [bpf.tcp.connlat](#bpftcpconnlat) : TCP connection latency ms
+- [bpf.tcp.rx](#bpftcprx) : TCP received bytes
+- [bpf.tcp.tx](#bpftcptx) : TCP transmitted bytes
 
 
 ## bpf.tcp.connlat

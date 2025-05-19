@@ -38,7 +38,7 @@ metrics:
         long: ""
         unit: bytes
         metric_type: int64
-        sum:
+        counter:
             value_type: ""
             aggregation: ""
         attributes:

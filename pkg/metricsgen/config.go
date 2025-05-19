@@ -112,7 +112,7 @@ type Metric struct {
 	Long               string `yaml:"long"`
 	Unit               string `yaml:"unit"`
 	ValueType          string `yaml:"metric_type"`
-	*MetricTypeSum     `yaml:"sum,omitempty"`
+	*MetricTypeCounter `yaml:"counter,omitempty"`
 	*MetricTypeGauge   `yaml:"gauge,omitempty"`
 	*MetricTypeHist    `yaml:"histogram,omitempty"`
 	*MetricTypeExpHist `yaml:"exponential_histogram,omitempty"`
@@ -133,7 +133,7 @@ func (m Metric) Validate(attrTable map[string]Attribute) error {
 	if m.MetricTypeGauge != nil {
 		count += 1
 	}
-	if m.MetricTypeSum != nil {
+	if m.MetricTypeCounter != nil {
 		count += 1
 	}
 	if m.MetricTypeHist != nil {
@@ -190,7 +190,7 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 	mAttrs := AttributesForMetric(m, attrTable)
 	return templates.DocMetric{
 		Name:       m.Name,
-		Link:       "",
+		Link:       MarkdownLinkAnchor(m.Name),
 		Short:      m.Short,
 		Long:       m.Long,
 		Unit:       m.Unit,
@@ -222,7 +222,7 @@ func (c *Config) ToDocsTemplateDefinition() templates.DocConfig {
 }
 
 func (m Metric) metricValueType() string {
-	if m.MetricTypeSum != nil {
+	if m.MetricTypeCounter != nil {
 		return "Counter"
 	}
 	if m.MetricTypeGauge != nil {
@@ -237,7 +237,7 @@ func (m Metric) metricValueType() string {
 	panic("unregisted metric type")
 }
 
-type MetricTypeSum struct {
+type MetricTypeCounter struct {
 	ValueType   string `yaml:"value_type"`
 	Aggregation string `yaml:"aggregation"`
 }
