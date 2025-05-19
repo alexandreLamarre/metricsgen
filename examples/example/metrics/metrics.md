@@ -18,9 +18,9 @@ Randomly generated tcp connection latency
 
 | Name | Description | Type | Required |
 |------|-------------|------| ------- |
+| cpu.id | cpu id in the range [0, numCPU] | int | ❌ |
 | pid | Process ID | int | ✅ |
 | pid.gid | Process Group ID | int | ✅ |
-| cpu.id | cpu id in the range [0, numCPU] | int | ❌ |
 
 
 ## dummy.tcp.rx
@@ -54,7 +54,7 @@ Randomly generated tcp transmitted bytes
 
 | Name | Description | Type | Required |
 |------|-------------|------| ------- |
+| cpu.id | cpu id in the range [0, numCPU] | int | ✅ |
 | pid | Process ID | int | ✅ |
 | pid.gid | Process Group ID | int | ✅ |
-| cpu.id | cpu id in the range [0, numCPU] | int | ✅ |
 

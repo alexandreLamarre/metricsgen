@@ -188,6 +188,16 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 		ret = append(ret, attr.ToDocsTemplateDefinition(false))
 	}
 
+	slices.SortFunc(ret, func(a, b templates.DocAttribute) int {
+		if a.Name < b.Name {
+			return -1
+		}
+		if a.Name > b.Name {
+			return 1
+		}
+		return 0
+	})
+
 	return templates.DocMetric{
 		Name:       m.Name,
 		Link:       MarkdownLinkAnchor(m.Name),
@@ -214,6 +224,17 @@ func (c *Config) ToDocsTemplateDefinition() templates.DocConfig {
 	for _, m := range c.Metrics {
 		ret = append(ret, m.ToDocsTemplateDefinition(c.Attributes))
 	}
+
+	slices.SortFunc(ret, func(a, b templates.DocMetric) int {
+		if a.Name < b.Name {
+			return -1
+		}
+		if a.Name > b.Name {
+			return 1
+		}
+		return 0
+	})
+
 	return templates.DocConfig{
 		Metrics: ret,
 	}
