@@ -33,8 +33,24 @@ var (
 )
 
 type Config struct {
-	Attributes map[string]Attribute `yaml:"attributes"`
-	Metrics    map[string]Metric    `yaml:"metrics"`
+	Attributes map[string]*Attribute `yaml:"attributes"`
+	Metrics    map[string]*Metric    `yaml:"metrics"`
+}
+
+func (c *Config) Sanitize() error {
+	if c == nil {
+		return fmt.Errorf("config is nil")
+	}
+	for aId, attr := range c.Attributes {
+		attr.Name = aId
+		c.Attributes[aId] = attr
+	}
+
+	for mId, metr := range c.Metrics {
+		metr.Name = mId
+		c.Metrics[mId] = metr
+	}
+	return nil
 }
 
 func (c *Config) Validate() error {
@@ -54,7 +70,7 @@ func (c *Config) Validate() error {
 }
 
 type Attribute struct {
-	Name        string `yaml:"name"`
+	Name        string
 	Description string `yaml:"description"`
 	Type        string `yaml:"type"`
 	Required    bool   `yaml:"required"`
@@ -91,7 +107,7 @@ func (a Attribute) ToDocsTemplateDefinition() templates.DocAttribute {
 }
 
 type Metric struct {
-	Name               string `yaml:"name"`
+	Name               string
 	Short              string `yaml:"short"`
 	Long               string `yaml:"long"`
 	Unit               string `yaml:"unit"`
@@ -141,7 +157,7 @@ func (m Metric) Validate(attrTable map[string]Attribute) error {
 	return nil
 }
 
-func (m Metric) ToTemplateDefinition(attrTable map[string]Attribute) templates.MetricConfig {
+func (m Metric) ToTemplateDefinition(attrTable map[string]*Attribute) templates.MetricConfig {
 	attrs := AttributesForMetric(m, attrTable)
 
 	requiredAttrs := []Attribute{}
@@ -170,7 +186,7 @@ func (m Metric) ToTemplateDefinition(attrTable map[string]Attribute) templates.M
 	}
 }
 
-func (m Metric) ToDocsTemplateDefinition(attrTable map[string]Attribute) templates.DocMetric {
+func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templates.DocMetric {
 	mAttrs := AttributesForMetric(m, attrTable)
 	return templates.DocMetric{
 		Name:       m.Name,
@@ -239,10 +255,10 @@ type MetricTypeHist struct {
 type MetricTypeExpHist struct {
 }
 
-func AttributesForMetric(m Metric, attrTable map[string]Attribute) []Attribute {
+func AttributesForMetric(m Metric, attrTable map[string]*Attribute) []Attribute {
 	ret := []Attribute{}
 	for _, attr := range m.Attributes {
-		ret = append(ret, attrTable[attr])
+		ret = append(ret, *attrTable[attr])
 	}
 	return ret
 }

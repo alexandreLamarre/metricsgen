@@ -30,6 +30,9 @@ func BuildGenerateCmd() *cobra.Command {
 			if err := yaml.Unmarshal(data, cfg); err != nil {
 				return err
 			}
+			if err := cfg.Sanitize(); err != nil {
+				return err
+			}
 			if err := cfg.Validate(); err != nil {
 				return err
 			}
