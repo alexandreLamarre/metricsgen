@@ -1,0 +1,53 @@
+attributes:
+    pid:
+        name: pid
+        description: Process ID
+        type: int
+        required: true
+    pid.gid:
+        name: pid.gid
+        description: Process Group ID
+        type: int
+        required: true
+    cpu.id:
+        name : cpu.id
+        description : cpu id in the range [0, numCPU]
+        type : int
+        required: false
+metrics:
+    bpf.tcp.connlat:
+        name: bpf.tcp.connlat
+        short: TCP connection latency ms
+        long: ""
+        unit: ms
+        metric_type: float
+        histogram:
+            value_type: ""
+            aggregation: ""
+        attributes:
+            - pid
+            - pid.gid
+    bpf.tcp.rx:
+        name: bpf.tcp.rx
+        short: TCP received bytes
+        long: collects from bpf tracepoints the total received bytes for the TCP protocol. Data is associated per pid, etc,etc
+        unit: bytes
+        metric_type: int64
+        gauge:
+            value_type: ""
+            aggregation: ""
+        attributes:
+            - pid
+    bpf.tcp.tx:
+        name: bpf.tcp.tx
+        short: TCP transmitted bytes
+        long: ""
+        unit: bytes
+        metric_type: int64
+        sum:
+            value_type: ""
+            aggregation: ""
+        attributes:
+            - pid
+            - pid.gid
+            - cpu.id

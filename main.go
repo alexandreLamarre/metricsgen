@@ -1,44 +1,85 @@
 package main
 
-import "github.com/alexandreLamarre/metricsgen/pkg/metricsgen"
+import (
+	"go/format"
+	"os"
+
+	"github.com/alexandreLamarre/metricsgen/pkg/metricsgen"
+	"github.com/alexandreLamarre/metricsgen/pkg/templates"
+	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
+)
+
+func BuildGenerateCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Args: cobra.ExactArgs(1),
+		Use:  "metricsgen <filename>",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			genFile := args[0]
+			var curPkg string
+			curPkg = os.Getenv("GOPACKAGE")
+			if curPkg == "" {
+				curPkg = "metrics"
+			}
+
+			data, err := os.ReadFile(genFile)
+			if err != nil {
+				return err
+			}
+			cfg := &metricsgen.Config{}
+			if err := yaml.Unmarshal(data, cfg); err != nil {
+				return err
+			}
+			if err := cfg.Validate(); err != nil {
+				return err
+			}
+
+			metricsgen, err := templates.ExecuteMetrics(templates.GenConfig{
+				PackageName: curPkg,
+				ImportDefs: []templates.ImportDef{
+					{
+						Dependency: "context",
+					},
+					{
+						Alias:      "otelmetricsdk",
+						Dependency: "go.opentelemetry.io/otel/metric",
+					},
+					{
+						Alias:      "otelattribute",
+						Dependency: "go.opentelemetry.io/otel/attribute",
+					},
+				},
+				Metrics: cfg.ToTemplateDefinition(),
+			})
+			if err != nil {
+				return err
+			}
+
+			metricsgen, err = format.Source(metricsgen)
+			if err != nil {
+				return err
+			}
+
+			if err := os.WriteFile("metrics_generated.go", metricsgen, 0644); err != nil {
+				return err
+			}
+
+			docsgen, err := templates.ExecuteDocs(cfg.ToDocsTemplateDefinition())
+			if err != nil {
+				return err
+			}
+
+			if err := os.WriteFile("metrics.md", docsgen, 0644); err != nil {
+				return err
+			}
+			return nil
+		},
+	}
+
+	return cmd
+}
 
 func main() {
-	cfg := &metricsgen.Config{
-		Attributes: map[string]metricsgen.Attribute{
-			"pid": {
-				Name:        "pid",
-				Description: "Process ID",
-				Type:        "int",
-				Required:    true,
-			},
-			"pid.gid": {
-				Name:        "pid.gid",
-				Description: "Process Group ID",
-				Type:        "int",
-				Required:    true,
-			},
-		},
-		Metrics: map[string]metricsgen.Metric{
-			"bpf.tcp.rx": {
-				Name:          "bpf.tcp.rx",
-				Short:         "TCP received bytes",
-				Long:          "collects from bpf tracepoints the total received bytes for the TCP protocol. Data is associated per pid, etc,etc",
-				Unit:          "bytes",
-				ValueType:     "int64",
-				MetricTypeSum: &metricsgen.MetricTypeSum{},
-				Attributes:    []string{"pid"},
-			},
-			"bpf.tcp.tx": {
-				Name:          "bpf.tcp.tx",
-				Short:         "TCP transmitted bytes",
-				Unit:          "bytes",
-				ValueType:     "int64",
-				MetricTypeSum: &metricsgen.MetricTypeSum{},
-				Attributes:    []string{"pid", "pid.gid"},
-			},
-		},
-	}
-	if err := cfg.Gen(); err != nil {
-		panic(err)
-	}
+	cmd := BuildGenerateCmd()
+	cmd.Execute()
 }

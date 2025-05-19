@@ -1,10 +1,26 @@
-package main
+package templates
 
 import (
 	"bytes"
 	_ "embed"
 	"os"
 )
+
+func ExecuteMetrics(cfg GenConfig) ([]byte, error) {
+	var b bytes.Buffer
+	if err := metricsGenTemplate.Execute(&b, cfg); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
+
+func ExecuteDocs(cfg DocConfig) ([]byte, error) {
+	var b bytes.Buffer
+	if err := docsGenTemplate.Execute(&b, cfg); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
 
 func main() {
 	var b bytes.Buffer
@@ -113,7 +129,6 @@ func main() {
 						Name:        "pid",
 						Description: "process id",
 						ValueType:   "int",
-						Required:    true,
 					},
 				},
 			},

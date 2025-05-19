@@ -27,3 +27,32 @@ func OtelStringToCamelCase(input string) string {
 
 	return strings.Join(parts, "")
 }
+
+func ValueTypeToAttributeConstructor(input string) string {
+	switch input {
+	case "int":
+		return "Int"
+	case "float":
+		return "Float"
+	case "string":
+		return "String"
+	}
+	panic("unkown value type")
+}
+
+func OtelStringToPromLabel(input string) string {
+	var b strings.Builder
+	for _, r := range input {
+		if unicode.IsUpper(r) {
+			b.WriteRune('_')
+			b.WriteRune(unicode.ToLower(r))
+		} else if r == '.' || r == '-' {
+			b.WriteRune('_')
+		} else if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			b.WriteRune(r)
+		}
+	}
+	label := b.String()
+	label = strings.Trim(label, "_")
+	return label
+}
