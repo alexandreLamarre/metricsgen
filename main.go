@@ -6,14 +6,16 @@ import (
 
 	"github.com/alexandreLamarre/metricsgen/pkg/metricsgen"
 	"github.com/alexandreLamarre/metricsgen/pkg/templates"
+	"github.com/alexandreLamarre/metricsgen/pkg/version"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
 
 func BuildGenerateCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Args: cobra.ExactArgs(1),
-		Use:  "metricsgen <filename>",
+		Args:    cobra.ExactArgs(1),
+		Use:     "metricsgen <filename>",
+		Version: version.FriendlyVersion(),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			genFile := args[0]
 			var curPkg string
