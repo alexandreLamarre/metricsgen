@@ -1,0 +1,42 @@
+# Make sure to check the documentation at https://goreleaser.com
+version: 2 # the goreleaser config version
+before:
+  hooks:
+    - go mod tidy
+builds:
+    - id: metricsgen
+      main: main.go
+      goos:
+        - linux
+        - darwin
+        - windows
+      goarch:
+        - amd64
+        - arm64
+
+      binary: metricsgen
+      ldflags:
+        - -extldflags
+        - -static
+        - -s
+        - -X github.com/alexandreLamarre/metricsgen/pkg/version.Version={{.Version}} 
+        - -X github.com/alexandreLamarre/metricsgen/pkg/version.Commit={{.Commit}}
+      env:
+        - CGO_ENABLED=0
+archives:
+    - id: metricsgen
+      builds:
+        - metricsgen
+      name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}'
+release:
+  prerelease: auto
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
