@@ -1,0 +1,26 @@
+# Metrics
+
+{{- range $metric := .Metrics }}
+- [{{$metric.Name}}](#{{$metric.Link}}) : {{$metric.Short}}
+{{- end }}
+
+{{ range $metric := .Metrics }}
+## {{$metric.Name }}
+
+{{$metric.Short}}
+
+{{$metric.Long}}
+
+| Unit | Metric Type | ValueType |
+| ---- | ------------ | --------- |
+| {{$metric.Unit }} | {{$metric.MetricType }} | {{ $metric.ValueType }}|
+
+### Attributes
+
+| Name | Description | Type | Required |
+|------|-------------|------| ------- |
+{{- range $metric.Attributes }}
+| {{ .Name }} | {{ .Description }} | {{ .ValueType }} | {{- if .Required}} ✅ {{- else}} ❌ {{- end }} |
+{{- end }}
+
+{{ end }}
