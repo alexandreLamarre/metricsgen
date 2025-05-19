@@ -9,24 +9,36 @@ import (
 
 type Metrics struct {
 	*MetricExampleCounter
+	*MetricExampleCounterOptional
 	*MetricExampleExponentialHistogram
 	*MetricExampleGauge
+	*MetricExampleGaugeOptional
 	*MetricExampleHistogram
+	*MetricExampleHistogramOptional
 }
 
 // NewMetrics initializes the set of following metrics
 // - ExampleCounter  : Example Counter
+// - ExampleCounterOptional  : Example Counter
 // - ExampleExponentialHistogram  : Example Exponential Histogram
 // - ExampleGauge  : Example Gauge
+// - ExampleGaugeOptional  : Example Gauge
 // - ExampleHistogram  : Example Histogram
+// - ExampleHistogramOptional  : Example Histogram
 func NewMetrics(meter otelmetricsdk.Meter) (Metrics, error) {
 	m := Metrics{
 		MetricExampleCounter:              &MetricExampleCounter{},
+		MetricExampleCounterOptional:      &MetricExampleCounterOptional{},
 		MetricExampleExponentialHistogram: &MetricExampleExponentialHistogram{},
 		MetricExampleGauge:                &MetricExampleGauge{},
+		MetricExampleGaugeOptional:        &MetricExampleGaugeOptional{},
 		MetricExampleHistogram:            &MetricExampleHistogram{},
+		MetricExampleHistogramOptional:    &MetricExampleHistogramOptional{},
 	}
 	if err := m.MetricExampleCounter.init(meter); err != nil {
+		return m, err
+	}
+	if err := m.MetricExampleCounterOptional.init(meter); err != nil {
 		return m, err
 	}
 	if err := m.MetricExampleExponentialHistogram.init(meter); err != nil {
@@ -35,7 +47,13 @@ func NewMetrics(meter otelmetricsdk.Meter) (Metrics, error) {
 	if err := m.MetricExampleGauge.init(meter); err != nil {
 		return m, err
 	}
+	if err := m.MetricExampleGaugeOptional.init(meter); err != nil {
+		return m, err
+	}
 	if err := m.MetricExampleHistogram.init(meter); err != nil {
+		return m, err
+	}
+	if err := m.MetricExampleHistogramOptional.init(meter); err != nil {
 		return m, err
 	}
 	return m, nil
@@ -118,6 +136,184 @@ func (o *AttributeExampleCounterOptions) Apply(opts ...AttributeExampleCounterOp
 func (o *AttributeExampleCounterOptions) Attributes() []otelattribute.KeyValue {
 	ret := []otelattribute.KeyValue{}
 	return ret
+}
+
+// MetricExampleCounterOptional Example Counter
+type MetricExampleCounterOptional struct {
+	data otelmetricsdk.Int64Counter
+}
+
+func (m *MetricExampleCounterOptional) init(meter otelmetricsdk.Meter) error {
+	var err error
+	m.data, err = meter.Int64Counter(
+		"example.counter.optional",
+		otelmetricsdk.WithDescription("Example Counter"),
+		otelmetricsdk.WithUnit("unit"),
+	)
+	return err
+}
+
+// Record records a data point for the specified metric
+func (m *MetricExampleCounterOptional) Record(
+	ctx context.Context,
+	value int64,
+	attributeOpts ...AttributeExampleCounterOptionalOption,
+) {
+	options := &AttributeExampleCounterOptionalOptions{}
+	options.Apply(attributeOpts...)
+	optionalAttr := options.Attributes()
+	requiredAttrs := []otelattribute.KeyValue{}
+
+	attrs := otelattribute.NewSet(
+		append(requiredAttrs, optionalAttr...)...,
+	)
+	m.data.Add(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
+}
+
+type AttributeExampleCounterOptionalOptions struct {
+	exampleString      *string
+	exampleInt         *int
+	exampleFloat       *float64
+	exampleBool        *bool
+	exampleInt64       *int64
+	exampleFloatSlice  *[]float64
+	exampleBoolSlice   *[]bool
+	exampleIntSlice    *[]int
+	exampleInt64Slice  *[]int64
+	exampleStringSlice *[]string
+}
+
+type AttributeExampleCounterOptionalOption func(*AttributeExampleCounterOptionalOptions)
+
+func (o *AttributeExampleCounterOptionalOptions) Apply(opts ...AttributeExampleCounterOptionalOption) {
+	for _, opt := range opts {
+		opt(o)
+	}
+}
+
+func (o *AttributeExampleCounterOptionalOptions) Attributes() []otelattribute.KeyValue {
+	ret := []otelattribute.KeyValue{}
+	if o.exampleString != nil {
+		ret = append(ret, otelattribute.String("example.string", *o.exampleString))
+	}
+	if o.exampleInt != nil {
+		ret = append(ret, otelattribute.Int("example.int", *o.exampleInt))
+	}
+	if o.exampleFloat != nil {
+		ret = append(ret, otelattribute.Float64("example.float", *o.exampleFloat))
+	}
+	if o.exampleBool != nil {
+		ret = append(ret, otelattribute.Bool("example.bool", *o.exampleBool))
+	}
+	if o.exampleInt64 != nil {
+		ret = append(ret, otelattribute.Int64("example.int64", *o.exampleInt64))
+	}
+	if o.exampleFloatSlice != nil {
+		ret = append(ret, otelattribute.Float64Slice("example.floatSlice", *o.exampleFloatSlice))
+	}
+	if o.exampleBoolSlice != nil {
+		ret = append(ret, otelattribute.BoolSlice("example.boolSlice", *o.exampleBoolSlice))
+	}
+	if o.exampleIntSlice != nil {
+		ret = append(ret, otelattribute.IntSlice("example.intSlice", *o.exampleIntSlice))
+	}
+	if o.exampleInt64Slice != nil {
+		ret = append(ret, otelattribute.Int64Slice("example.int64Slice", *o.exampleInt64Slice))
+	}
+	if o.exampleStringSlice != nil {
+		ret = append(ret, otelattribute.StringSlice("example.stringSlice", *o.exampleStringSlice))
+	}
+	return ret
+}
+
+// WithExampleCounterOptionalExampleString sets the optional example.string attribute
+// corresponding to Example string value
+func WithExampleCounterOptionalExampleString(exampleString string) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleString
+		o.exampleString = val
+	}
+}
+
+// WithExampleCounterOptionalExampleInt sets the optional example.int attribute
+// corresponding to Example int value
+func WithExampleCounterOptionalExampleInt(exampleInt int) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleInt
+		o.exampleInt = val
+	}
+}
+
+// WithExampleCounterOptionalExampleFloat sets the optional example.float attribute
+// corresponding to Example float value
+func WithExampleCounterOptionalExampleFloat(exampleFloat float64) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleFloat
+		o.exampleFloat = val
+	}
+}
+
+// WithExampleCounterOptionalExampleBool sets the optional example.bool attribute
+// corresponding to Example boolean value
+func WithExampleCounterOptionalExampleBool(exampleBool bool) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleBool
+		o.exampleBool = val
+	}
+}
+
+// WithExampleCounterOptionalExampleInt64 sets the optional example.int64 attribute
+// corresponding to Example int64 value
+func WithExampleCounterOptionalExampleInt64(exampleInt64 int64) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleInt64
+		o.exampleInt64 = val
+	}
+}
+
+// WithExampleCounterOptionalExampleFloatSlice sets the optional example.floatSlice attribute
+// corresponding to Example float slice value
+func WithExampleCounterOptionalExampleFloatSlice(exampleFloatSlice []float64) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleFloatSlice
+		o.exampleFloatSlice = val
+	}
+}
+
+// WithExampleCounterOptionalExampleBoolSlice sets the optional example.boolSlice attribute
+// corresponding to Example bool slice value
+func WithExampleCounterOptionalExampleBoolSlice(exampleBoolSlice []bool) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleBoolSlice
+		o.exampleBoolSlice = val
+	}
+}
+
+// WithExampleCounterOptionalExampleIntSlice sets the optional example.intSlice attribute
+// corresponding to Example int slice value
+func WithExampleCounterOptionalExampleIntSlice(exampleIntSlice []int) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleIntSlice
+		o.exampleIntSlice = val
+	}
+}
+
+// WithExampleCounterOptionalExampleInt64Slice sets the optional example.int64Slice attribute
+// corresponding to Example int64 slice value
+func WithExampleCounterOptionalExampleInt64Slice(exampleInt64Slice []int64) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleInt64Slice
+		o.exampleInt64Slice = val
+	}
+}
+
+// WithExampleCounterOptionalExampleStringSlice sets the optional example.stringSlice attribute
+// corresponding to Example int slice value
+func WithExampleCounterOptionalExampleStringSlice(exampleStringSlice []string) AttributeExampleCounterOptionalOption {
+	return func(o *AttributeExampleCounterOptionalOptions) {
+		val := &exampleStringSlice
+		o.exampleStringSlice = val
+	}
 }
 
 // MetricExampleExponentialHistogram Example Exponential Histogram
@@ -278,6 +474,85 @@ func (o *AttributeExampleGaugeOptions) Attributes() []otelattribute.KeyValue {
 	return ret
 }
 
+// MetricExampleGaugeOptional Example Gauge
+type MetricExampleGaugeOptional struct {
+	data otelmetricsdk.Float64Gauge
+}
+
+func (m *MetricExampleGaugeOptional) init(meter otelmetricsdk.Meter) error {
+	var err error
+	m.data, err = meter.Float64Gauge(
+		"example.gauge.optional",
+		otelmetricsdk.WithDescription("Example Gauge"),
+		otelmetricsdk.WithUnit("unit"),
+	)
+	return err
+}
+
+// Record records a data point for the specified metric
+// - exampleString : Example string value
+// - exampleInt : Example int value
+// - exampleFloat : Example float value
+// - exampleBool : Example boolean value
+// - exampleInt64 : Example int64 value
+// - exampleFloatSlice : Example float slice value
+// - exampleBoolSlice : Example bool slice value
+// - exampleIntSlice : Example int slice value
+// - exampleInt64Slice : Example int64 slice value
+// - exampleStringSlice : Example int slice value
+func (m *MetricExampleGaugeOptional) Record(
+	ctx context.Context,
+	value float64,
+	exampleString string,
+	exampleInt int,
+	exampleFloat float64,
+	exampleBool bool,
+	exampleInt64 int64,
+	exampleFloatSlice []float64,
+	exampleBoolSlice []bool,
+	exampleIntSlice []int,
+	exampleInt64Slice []int64,
+	exampleStringSlice []string,
+	attributeOpts ...AttributeExampleGaugeOptionalOption,
+) {
+	options := &AttributeExampleGaugeOptionalOptions{}
+	options.Apply(attributeOpts...)
+	optionalAttr := options.Attributes()
+	requiredAttrs := []otelattribute.KeyValue{
+		otelattribute.String("example.string", exampleString),
+		otelattribute.Int("example.int", exampleInt),
+		otelattribute.Float64("example.float", exampleFloat),
+		otelattribute.Bool("example.bool", exampleBool),
+		otelattribute.Int64("example.int64", exampleInt64),
+		otelattribute.Float64Slice("example.floatSlice", exampleFloatSlice),
+		otelattribute.BoolSlice("example.boolSlice", exampleBoolSlice),
+		otelattribute.IntSlice("example.intSlice", exampleIntSlice),
+		otelattribute.Int64Slice("example.int64Slice", exampleInt64Slice),
+		otelattribute.StringSlice("example.stringSlice", exampleStringSlice),
+	}
+
+	attrs := otelattribute.NewSet(
+		append(requiredAttrs, optionalAttr...)...,
+	)
+	m.data.Record(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
+}
+
+type AttributeExampleGaugeOptionalOptions struct {
+}
+
+type AttributeExampleGaugeOptionalOption func(*AttributeExampleGaugeOptionalOptions)
+
+func (o *AttributeExampleGaugeOptionalOptions) Apply(opts ...AttributeExampleGaugeOptionalOption) {
+	for _, opt := range opts {
+		opt(o)
+	}
+}
+
+func (o *AttributeExampleGaugeOptionalOptions) Attributes() []otelattribute.KeyValue {
+	ret := []otelattribute.KeyValue{}
+	return ret
+}
+
 // MetricExampleHistogram Example Histogram
 type MetricExampleHistogram struct {
 	data otelmetricsdk.Float64Histogram
@@ -353,6 +628,85 @@ func (o *AttributeExampleHistogramOptions) Apply(opts ...AttributeExampleHistogr
 }
 
 func (o *AttributeExampleHistogramOptions) Attributes() []otelattribute.KeyValue {
+	ret := []otelattribute.KeyValue{}
+	return ret
+}
+
+// MetricExampleHistogramOptional Example Histogram
+type MetricExampleHistogramOptional struct {
+	data otelmetricsdk.Float64Histogram
+}
+
+func (m *MetricExampleHistogramOptional) init(meter otelmetricsdk.Meter) error {
+	var err error
+	m.data, err = meter.Float64Histogram(
+		"example.histogram.optional",
+		otelmetricsdk.WithDescription("Example Histogram"),
+		otelmetricsdk.WithUnit("ms"),
+	)
+	return err
+}
+
+// Record records a data point for the specified metric
+// - exampleString : Example string value
+// - exampleInt : Example int value
+// - exampleFloat : Example float value
+// - exampleBool : Example boolean value
+// - exampleInt64 : Example int64 value
+// - exampleFloatSlice : Example float slice value
+// - exampleBoolSlice : Example bool slice value
+// - exampleIntSlice : Example int slice value
+// - exampleInt64Slice : Example int64 slice value
+// - exampleStringSlice : Example int slice value
+func (m *MetricExampleHistogramOptional) Record(
+	ctx context.Context,
+	value float64,
+	exampleString string,
+	exampleInt int,
+	exampleFloat float64,
+	exampleBool bool,
+	exampleInt64 int64,
+	exampleFloatSlice []float64,
+	exampleBoolSlice []bool,
+	exampleIntSlice []int,
+	exampleInt64Slice []int64,
+	exampleStringSlice []string,
+	attributeOpts ...AttributeExampleHistogramOptionalOption,
+) {
+	options := &AttributeExampleHistogramOptionalOptions{}
+	options.Apply(attributeOpts...)
+	optionalAttr := options.Attributes()
+	requiredAttrs := []otelattribute.KeyValue{
+		otelattribute.String("example.string", exampleString),
+		otelattribute.Int("example.int", exampleInt),
+		otelattribute.Float64("example.float", exampleFloat),
+		otelattribute.Bool("example.bool", exampleBool),
+		otelattribute.Int64("example.int64", exampleInt64),
+		otelattribute.Float64Slice("example.floatSlice", exampleFloatSlice),
+		otelattribute.BoolSlice("example.boolSlice", exampleBoolSlice),
+		otelattribute.IntSlice("example.intSlice", exampleIntSlice),
+		otelattribute.Int64Slice("example.int64Slice", exampleInt64Slice),
+		otelattribute.StringSlice("example.stringSlice", exampleStringSlice),
+	}
+
+	attrs := otelattribute.NewSet(
+		append(requiredAttrs, optionalAttr...)...,
+	)
+	m.data.Record(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
+}
+
+type AttributeExampleHistogramOptionalOptions struct {
+}
+
+type AttributeExampleHistogramOptionalOption func(*AttributeExampleHistogramOptionalOptions)
+
+func (o *AttributeExampleHistogramOptionalOptions) Apply(opts ...AttributeExampleHistogramOptionalOption) {
+	for _, opt := range opts {
+		opt(o)
+	}
+}
+
+func (o *AttributeExampleHistogramOptionalOptions) Attributes() []otelattribute.KeyValue {
 	ret := []otelattribute.KeyValue{}
 	return ret
 }

@@ -1,14 +1,14 @@
 # Metrics
-- [bpf.tcp.connlat](#bpftcpconnlat) : TCP connection latency ms
-- [bpf.tcp.rx](#bpftcprx) : TCP received bytes
-- [bpf.tcp.tx](#bpftcptx) : TCP transmitted bytes
+- [dummy.tcp.connlat](#dummytcpconnlat) : TCP connection latency ms
+- [dummy.tcp.rx](#dummytcprx) : TCP received bytes
+- [dummy.tcp.tx](#dummytcptx) : TCP transmitted bytes
 
 
-## bpf.tcp.connlat
+## dummy.tcp.connlat
 
 TCP connection latency ms
 
-
+Randomly generated tcp connection latency
 
 | Unit | Metric Type | ValueType |
 | ---- | ------------ | --------- |
@@ -20,13 +20,14 @@ TCP connection latency ms
 |------|-------------|------| ------- |
 | pid | Process ID | int | ✅ |
 | pid.gid | Process Group ID | int | ✅ |
+| cpu.id | cpu id in the range [0, numCPU] | int | ❌ |
 
 
-## bpf.tcp.rx
+## dummy.tcp.rx
 
 TCP received bytes
 
-collects from bpf tracepoints the total received bytes for the TCP protocol. Data is associated per pid, etc,etc
+Randomly generated tcp received bytes
 
 | Unit | Metric Type | ValueType |
 | ---- | ------------ | --------- |
@@ -39,11 +40,11 @@ collects from bpf tracepoints the total received bytes for the TCP protocol. Dat
 | pid | Process ID | int | ✅ |
 
 
-## bpf.tcp.tx
+## dummy.tcp.tx
 
 TCP transmitted bytes
 
-
+Randomly generated tcp transmitted bytes
 
 | Unit | Metric Type | ValueType |
 | ---- | ------------ | --------- |
@@ -55,5 +56,5 @@ TCP transmitted bytes
 |------|-------------|------| ------- |
 | pid | Process ID | int | ✅ |
 | pid.gid | Process Group ID | int | ✅ |
-| cpu.id | cpu id in the range [0, numCPU] | int | ❌ |
+| cpu.id | cpu id in the range [0, numCPU] | int | ✅ |
 

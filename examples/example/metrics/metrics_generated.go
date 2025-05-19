@@ -8,42 +8,42 @@ import (
 )
 
 type Metrics struct {
-	*MetricBpfTcpConnlat
-	*MetricBpfTcpRx
-	*MetricBpfTcpTx
+	*MetricDummyTcpConnlat
+	*MetricDummyTcpRx
+	*MetricDummyTcpTx
 }
 
 // NewMetrics initializes the set of following metrics
-// - BpfTcpConnlat  : TCP connection latency ms
-// - BpfTcpRx  : TCP received bytes
-// - BpfTcpTx  : TCP transmitted bytes
+// - DummyTcpConnlat  : TCP connection latency ms
+// - DummyTcpRx  : TCP received bytes
+// - DummyTcpTx  : TCP transmitted bytes
 func NewMetrics(meter otelmetricsdk.Meter) (Metrics, error) {
 	m := Metrics{
-		MetricBpfTcpConnlat: &MetricBpfTcpConnlat{},
-		MetricBpfTcpRx:      &MetricBpfTcpRx{},
-		MetricBpfTcpTx:      &MetricBpfTcpTx{},
+		MetricDummyTcpConnlat: &MetricDummyTcpConnlat{},
+		MetricDummyTcpRx:      &MetricDummyTcpRx{},
+		MetricDummyTcpTx:      &MetricDummyTcpTx{},
 	}
-	if err := m.MetricBpfTcpConnlat.init(meter); err != nil {
+	if err := m.MetricDummyTcpConnlat.init(meter); err != nil {
 		return m, err
 	}
-	if err := m.MetricBpfTcpRx.init(meter); err != nil {
+	if err := m.MetricDummyTcpRx.init(meter); err != nil {
 		return m, err
 	}
-	if err := m.MetricBpfTcpTx.init(meter); err != nil {
+	if err := m.MetricDummyTcpTx.init(meter); err != nil {
 		return m, err
 	}
 	return m, nil
 }
 
-// MetricBpfTcpConnlat TCP connection latency ms
-type MetricBpfTcpConnlat struct {
+// MetricDummyTcpConnlat TCP connection latency ms
+type MetricDummyTcpConnlat struct {
 	data otelmetricsdk.Float64Histogram
 }
 
-func (m *MetricBpfTcpConnlat) init(meter otelmetricsdk.Meter) error {
+func (m *MetricDummyTcpConnlat) init(meter otelmetricsdk.Meter) error {
 	var err error
 	m.data, err = meter.Float64Histogram(
-		"bpf.tcp.connlat",
+		"dummy.tcp.connlat",
 		otelmetricsdk.WithDescription("TCP connection latency ms"),
 		otelmetricsdk.WithUnit("ms"),
 	)
@@ -53,14 +53,14 @@ func (m *MetricBpfTcpConnlat) init(meter otelmetricsdk.Meter) error {
 // Record records a data point for the specified metric
 // - pid : Process ID
 // - pidGid : Process Group ID
-func (m *MetricBpfTcpConnlat) Record(
+func (m *MetricDummyTcpConnlat) Record(
 	ctx context.Context,
 	value float64,
 	pid int,
 	pidGid int,
-	attributeOpts ...AttributeBpfTcpConnlatOption,
+	attributeOpts ...AttributeDummyTcpConnlatOption,
 ) {
-	options := &AttributeBpfTcpConnlatOptions{}
+	options := &AttributeDummyTcpConnlatOptions{}
 	options.Apply(attributeOpts...)
 	optionalAttr := options.Attributes()
 	requiredAttrs := []otelattribute.KeyValue{
@@ -74,31 +74,44 @@ func (m *MetricBpfTcpConnlat) Record(
 	m.data.Record(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
 }
 
-type AttributeBpfTcpConnlatOptions struct {
+type AttributeDummyTcpConnlatOptions struct {
+	cpuId *int
 }
 
-type AttributeBpfTcpConnlatOption func(*AttributeBpfTcpConnlatOptions)
+type AttributeDummyTcpConnlatOption func(*AttributeDummyTcpConnlatOptions)
 
-func (o *AttributeBpfTcpConnlatOptions) Apply(opts ...AttributeBpfTcpConnlatOption) {
+func (o *AttributeDummyTcpConnlatOptions) Apply(opts ...AttributeDummyTcpConnlatOption) {
 	for _, opt := range opts {
 		opt(o)
 	}
 }
 
-func (o *AttributeBpfTcpConnlatOptions) Attributes() []otelattribute.KeyValue {
+func (o *AttributeDummyTcpConnlatOptions) Attributes() []otelattribute.KeyValue {
 	ret := []otelattribute.KeyValue{}
+	if o.cpuId != nil {
+		ret = append(ret, otelattribute.Int("cpu.id", *o.cpuId))
+	}
 	return ret
 }
 
-// MetricBpfTcpRx TCP received bytes
-type MetricBpfTcpRx struct {
+// WithDummyTcpConnlatCpuId sets the optional cpu.id attribute
+// corresponding to cpu id in the range [0, numCPU]
+func WithDummyTcpConnlatCpuId(cpuId int) AttributeDummyTcpConnlatOption {
+	return func(o *AttributeDummyTcpConnlatOptions) {
+		val := &cpuId
+		o.cpuId = val
+	}
+}
+
+// MetricDummyTcpRx TCP received bytes
+type MetricDummyTcpRx struct {
 	data otelmetricsdk.Int64Gauge
 }
 
-func (m *MetricBpfTcpRx) init(meter otelmetricsdk.Meter) error {
+func (m *MetricDummyTcpRx) init(meter otelmetricsdk.Meter) error {
 	var err error
 	m.data, err = meter.Int64Gauge(
-		"bpf.tcp.rx",
+		"dummy.tcp.rx",
 		otelmetricsdk.WithDescription("TCP received bytes"),
 		otelmetricsdk.WithUnit("bytes"),
 	)
@@ -107,13 +120,13 @@ func (m *MetricBpfTcpRx) init(meter otelmetricsdk.Meter) error {
 
 // Record records a data point for the specified metric
 // - pid : Process ID
-func (m *MetricBpfTcpRx) Record(
+func (m *MetricDummyTcpRx) Record(
 	ctx context.Context,
 	value int64,
 	pid int,
-	attributeOpts ...AttributeBpfTcpRxOption,
+	attributeOpts ...AttributeDummyTcpRxOption,
 ) {
-	options := &AttributeBpfTcpRxOptions{}
+	options := &AttributeDummyTcpRxOptions{}
 	options.Apply(attributeOpts...)
 	optionalAttr := options.Attributes()
 	requiredAttrs := []otelattribute.KeyValue{
@@ -126,31 +139,31 @@ func (m *MetricBpfTcpRx) Record(
 	m.data.Record(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
 }
 
-type AttributeBpfTcpRxOptions struct {
+type AttributeDummyTcpRxOptions struct {
 }
 
-type AttributeBpfTcpRxOption func(*AttributeBpfTcpRxOptions)
+type AttributeDummyTcpRxOption func(*AttributeDummyTcpRxOptions)
 
-func (o *AttributeBpfTcpRxOptions) Apply(opts ...AttributeBpfTcpRxOption) {
+func (o *AttributeDummyTcpRxOptions) Apply(opts ...AttributeDummyTcpRxOption) {
 	for _, opt := range opts {
 		opt(o)
 	}
 }
 
-func (o *AttributeBpfTcpRxOptions) Attributes() []otelattribute.KeyValue {
+func (o *AttributeDummyTcpRxOptions) Attributes() []otelattribute.KeyValue {
 	ret := []otelattribute.KeyValue{}
 	return ret
 }
 
-// MetricBpfTcpTx TCP transmitted bytes
-type MetricBpfTcpTx struct {
+// MetricDummyTcpTx TCP transmitted bytes
+type MetricDummyTcpTx struct {
 	data otelmetricsdk.Int64Counter
 }
 
-func (m *MetricBpfTcpTx) init(meter otelmetricsdk.Meter) error {
+func (m *MetricDummyTcpTx) init(meter otelmetricsdk.Meter) error {
 	var err error
 	m.data, err = meter.Int64Counter(
-		"bpf.tcp.tx",
+		"dummy.tcp.tx",
 		otelmetricsdk.WithDescription("TCP transmitted bytes"),
 		otelmetricsdk.WithUnit("bytes"),
 	)
@@ -160,19 +173,22 @@ func (m *MetricBpfTcpTx) init(meter otelmetricsdk.Meter) error {
 // Record records a data point for the specified metric
 // - pid : Process ID
 // - pidGid : Process Group ID
-func (m *MetricBpfTcpTx) Record(
+// - cpuId : cpu id in the range [0, numCPU]
+func (m *MetricDummyTcpTx) Record(
 	ctx context.Context,
 	value int64,
 	pid int,
 	pidGid int,
-	attributeOpts ...AttributeBpfTcpTxOption,
+	cpuId int,
+	attributeOpts ...AttributeDummyTcpTxOption,
 ) {
-	options := &AttributeBpfTcpTxOptions{}
+	options := &AttributeDummyTcpTxOptions{}
 	options.Apply(attributeOpts...)
 	optionalAttr := options.Attributes()
 	requiredAttrs := []otelattribute.KeyValue{
 		otelattribute.Int("pid", pid),
 		otelattribute.Int("pid.gid", pidGid),
+		otelattribute.Int("cpu.id", cpuId),
 	}
 
 	attrs := otelattribute.NewSet(
@@ -181,31 +197,18 @@ func (m *MetricBpfTcpTx) Record(
 	m.data.Add(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
 }
 
-type AttributeBpfTcpTxOptions struct {
-	cpuId *int
+type AttributeDummyTcpTxOptions struct {
 }
 
-type AttributeBpfTcpTxOption func(*AttributeBpfTcpTxOptions)
+type AttributeDummyTcpTxOption func(*AttributeDummyTcpTxOptions)
 
-func (o *AttributeBpfTcpTxOptions) Apply(opts ...AttributeBpfTcpTxOption) {
+func (o *AttributeDummyTcpTxOptions) Apply(opts ...AttributeDummyTcpTxOption) {
 	for _, opt := range opts {
 		opt(o)
 	}
 }
 
-func (o *AttributeBpfTcpTxOptions) Attributes() []otelattribute.KeyValue {
+func (o *AttributeDummyTcpTxOptions) Attributes() []otelattribute.KeyValue {
 	ret := []otelattribute.KeyValue{}
-	if o.cpuId != nil {
-		ret = append(ret, otelattribute.Int("cpu.id", *o.cpuId))
-	}
 	return ret
-}
-
-// WithBpfTcpTxCpuId sets the optional cpu.id attribute
-// corresponding to cpu id in the range [0, numCPU]
-func WithBpfTcpTxCpuId(cpuId int) AttributeBpfTcpTxOption {
-	return func(o *AttributeBpfTcpTxOptions) {
-		val := &cpuId
-		o.cpuId = val
-	}
 }

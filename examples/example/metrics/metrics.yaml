@@ -2,19 +2,16 @@ attributes:
     pid:
         description: Process ID
         type: int
-        required: true
     pid.gid:
         description: Process Group ID
         type: int
-        required: true
     cpu.id:
         description : cpu id in the range [0, numCPU]
         type : int
-        required: false
 metrics:
-    bpf.tcp.connlat:
+    dummy.tcp.connlat:
         short: TCP connection latency ms
-        long: ""
+        long: "Randomly generated tcp connection latency"
         unit: ms
         metric_type: float
         histogram:
@@ -23,9 +20,11 @@ metrics:
         attributes:
             - pid
             - pid.gid
-    bpf.tcp.rx:
+        optional_attributes:
+            - cpu.id
+    dummy.tcp.rx:
         short: TCP received bytes
-        long: collects from bpf tracepoints the total received bytes for the TCP protocol. Data is associated per pid, etc,etc
+        long: Randomly generated tcp received bytes
         unit: bytes
         metric_type: int64
         gauge:
@@ -33,9 +32,9 @@ metrics:
             aggregation: ""
         attributes:
             - pid
-    bpf.tcp.tx:
+    dummy.tcp.tx:
         short: TCP transmitted bytes
-        long: ""
+        long: Randomly generated tcp transmitted bytes
         unit: bytes
         metric_type: int64
         counter:

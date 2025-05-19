@@ -48,25 +48,26 @@ func recordDummyMetrics(ctx context.Context, m metrics.Metrics) {
 			log.Println("exiting recording dummy metrics")
 		case <-t.C:
 			for x := range 16 {
-				m.MetricBpfTcpConnlat.Record(
+				m.MetricDummyTcpConnlat.Record(
 					ctx,
 					rand.Float64(),
 					rand.Int(),
 					rand.Int(),
+					metrics.WithDummyTcpConnlatCpuId(x),
 				)
 
-				m.MetricBpfTcpRx.Record(
+				m.MetricDummyTcpRx.Record(
 					ctx,
 					rand.Int63(),
 					rand.Int(),
 				)
 
-				m.MetricBpfTcpTx.Record(
+				m.MetricDummyTcpTx.Record(
 					ctx,
 					rand.Int63(),
 					rand.Int(),
 					rand.Int(),
-					metrics.WithBpfTcpTxCpuId(x),
+					x,
 				)
 			}
 		}

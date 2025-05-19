@@ -16,9 +16,9 @@ func TestExampleMetrics(t *testing.T) {
 	m, err := metrics.NewMetrics(otel.Meter("tcp"))
 	require.NoError(t, err)
 
-	m.MetricBpfTcpConnlat.Record(ctx, 0, 1, 1)
+	m.MetricDummyTcpConnlat.Record(ctx, 0, 1, 1, metrics.WithDummyTcpConnlatCpuId(1))
 
-	m.MetricBpfTcpRx.Record(ctx, 0, 1)
+	m.MetricDummyTcpRx.Record(ctx, 0, 1)
 
-	m.MetricBpfTcpTx.Record(ctx, 0, 1, 1, metrics.WithBpfTcpTxCpuId(1))
+	m.MetricDummyTcpTx.Record(ctx, 0, 1, 1, 1)
 }

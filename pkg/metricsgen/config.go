@@ -73,7 +73,6 @@ type Attribute struct {
 	Name        string
 	Description string `yaml:"description"`
 	Type        string `yaml:"type"`
-	Required    bool   `yaml:"required"`
 }
 
 func (a Attribute) Validate() error {
@@ -97,12 +96,12 @@ func (a Attribute) ToTemplateDefinition() templates.AttributeDef {
 	}
 }
 
-func (a Attribute) ToDocsTemplateDefinition() templates.DocAttribute {
+func (a Attribute) ToDocsTemplateDefinition(required bool) templates.DocAttribute {
 	return templates.DocAttribute{
 		Name:        a.Name,
 		Description: a.Description,
 		ValueType:   a.Type,
-		Required:    a.Required,
+		Required:    required,
 	}
 }
 
@@ -117,6 +116,7 @@ type Metric struct {
 	*MetricTypeHist    `yaml:"histogram,omitempty"`
 	*MetricTypeExpHist `yaml:"exponential_histogram,omitempty"`
 	Attributes         []string `yaml:"attributes"`
+	OptionAttributes   []string `yaml:"optional_attributes"`
 }
 
 func (m Metric) Validate(attrTable map[string]Attribute) error {
@@ -158,18 +158,9 @@ func (m Metric) Validate(attrTable map[string]Attribute) error {
 }
 
 func (m Metric) ToTemplateDefinition(attrTable map[string]*Attribute) templates.MetricConfig {
-	attrs := AttributesForMetric(m, attrTable)
+	requiredAttrs := AttributesForMetric(m.Attributes, attrTable)
+	optionalAttrs := AttributesForMetric(m.OptionAttributes, attrTable)
 
-	requiredAttrs := []Attribute{}
-	optionalAttrs := []Attribute{}
-
-	for _, attr := range attrs {
-		if attr.Required {
-			requiredAttrs = append(requiredAttrs, attr)
-		} else {
-			optionalAttrs = append(optionalAttrs, attr)
-		}
-	}
 	return templates.MetricConfig{
 		Name:        m.Name,
 		Description: m.Short,
@@ -187,7 +178,16 @@ func (m Metric) ToTemplateDefinition(attrTable map[string]*Attribute) templates.
 }
 
 func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templates.DocMetric {
-	mAttrs := AttributesForMetric(m, attrTable)
+	requireAttrs := AttributesForMetric(m.Attributes, attrTable)
+	optAttrs := AttributesForMetric(m.OptionAttributes, attrTable)
+	ret := []templates.DocAttribute{}
+	for _, attr := range requireAttrs {
+		ret = append(ret, attr.ToDocsTemplateDefinition(true))
+	}
+	for _, attr := range optAttrs {
+		ret = append(ret, attr.ToDocsTemplateDefinition(false))
+	}
+
 	return templates.DocMetric{
 		Name:       m.Name,
 		Link:       MarkdownLinkAnchor(m.Name),
@@ -196,9 +196,7 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 		Unit:       m.Unit,
 		MetricType: m.metricValueType(),
 		ValueType:  m.ValueType,
-		Attributes: lo.Map(mAttrs, func(a Attribute, _ int) templates.DocAttribute {
-			return a.ToDocsTemplateDefinition()
-		}),
+		Attributes: ret,
 	}
 }
 
@@ -255,9 +253,9 @@ type MetricTypeHist struct {
 type MetricTypeExpHist struct {
 }
 
-func AttributesForMetric(m Metric, attrTable map[string]*Attribute) []Attribute {
+func AttributesForMetric(attrs []string, attrTable map[string]*Attribute) []Attribute {
 	ret := []Attribute{}
-	for _, attr := range m.Attributes {
+	for _, attr := range attrs {
 		ret = append(ret, *attrTable[attr])
 	}
 	return ret
