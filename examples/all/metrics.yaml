@@ -1,0 +1,120 @@
+attributes:
+  example.string:
+    description: Example string value
+    type: string
+    required: true
+  example.int:
+    description: Example int value
+    type : int
+    required: true
+  example.float:
+    description: Example float value
+    type : float64
+    required : true
+  example.bool:
+    description: Example boolean value
+    type : "bool"
+    required: true
+  example.int64:
+    description: Example int64 value
+    type : int64
+    required: true
+  example.boolSlice:
+    description : Example bool slice value
+    type : "[]bool"
+    required: true
+  example.floatSlice:
+    description : Example float slice value
+    type : "[]float64"
+    required: true
+  example.intSlice:
+    description : Example int slice value
+    type : "[]int"
+    required: true
+  example.int64Slice:
+    description : Example int64 slice value
+    type : "[]int64"
+    required: true
+  example.stringSlice:
+    description : Example int slice value
+    type : "[]string"
+    required: true
+
+
+metrics:
+  example.counter:
+    short: Example Counter
+    long: Some extra details about what the Example Counter represents and how it is collected.
+    unit : unit
+    metric_type: int
+    counter:
+      value_type: ""
+      aggregation : ""
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+  example.gauge:
+    short: Example Gauge
+    long: Some extra details about what the Example Gauge represents and how it is collected.
+    unit : unit
+    metric_type: float
+    gauge:
+      value_type: ""
+      aggregation : ""
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+  example.histogram:
+    short: Example Histogram
+    long : "Some extra details about what the Example Histogram represents and how it is collected."
+    unit: ms
+    metric_type: float
+    histogram:
+        value_type: ""
+        aggregation: ""
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+  example.exponential_histogram:
+    short: Example Exponential Histogram
+    long: ""
+    unit: ms
+    metric_type: float
+    exponential_histogram:
+        value_type: ""
+        aggregation: ""
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
