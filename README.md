@@ -2,7 +2,7 @@
 
 ![Build](https://github.com/alexandreLamarre/metricsgen/actions/workflows/ci.yaml/badge.svg)
 
-A go generate tool for generating type safe metric instrumentation scaffholding.
+A go generate tool for generating type safe metric instrumentation scaffholding and matching metric documentation.
 
 ## Example Usage
 
