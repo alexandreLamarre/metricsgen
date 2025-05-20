@@ -564,6 +564,7 @@ func (m *MetricExampleHistogram) init(meter otelmetricsdk.Meter) error {
 		"example.histogram",
 		otelmetricsdk.WithDescription("Example Histogram"),
 		otelmetricsdk.WithUnit("ms"),
+		otelmetricsdk.WithExplicitBucketBoundaries(1, 2, 3, 4),
 	)
 	return err
 }

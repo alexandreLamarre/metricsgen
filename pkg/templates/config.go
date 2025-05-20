@@ -44,6 +44,7 @@ type MetricConfig struct {
 	Value              string
 	RequiredAttributes []AttributeDef
 	OptionalAttributes []AttributeDef
+	Buckets            []float64
 }
 
 type EnumConfig struct {

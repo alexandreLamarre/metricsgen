@@ -248,6 +248,10 @@ func (m Metric) Validate(l *slog.Logger, attrTable map[string]*Attribute) error 
 func (m Metric) ToTemplateDefinition(attrTable map[string]*Attribute) templates.MetricConfig {
 	requiredAttrs := AttributesForMetric(m.Attributes, attrTable)
 	optionalAttrs := AttributesForMetric(m.OptionAttributes, attrTable)
+	buckets := []float64{}
+	if m.MetricTypeHist != nil {
+		buckets = m.Buckets
+	}
 
 	return templates.MetricConfig{
 		Name:        m.Name,
@@ -262,6 +266,7 @@ func (m Metric) ToTemplateDefinition(attrTable map[string]*Attribute) templates.
 		OptionalAttributes: lo.Map(optionalAttrs, func(a Attribute, _ int) templates.AttributeDef {
 			return a.ToTemplateDefinition()
 		}),
+		Buckets: buckets,
 	}
 }
 
@@ -414,7 +419,8 @@ type MetricTypeGauge struct {
 }
 
 type MetricTypeHist struct {
-	ValueType string `yaml:"value_type"`
+	ValueType string    `yaml:"value_type"`
+	Buckets   []float64 `yaml:"buckets,omitempty"`
 }
 
 type MetricTypeExpHist struct {

@@ -108,6 +108,7 @@ metrics:
     unit: ms
     histogram:
         value_type: "float"
+        buckets: [1,2,3,4]
     attributes:
       - example.string
       - example.int

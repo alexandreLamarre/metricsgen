@@ -64,6 +64,9 @@ func (m *Metric{{ $metricStructName }}) init(meter otelmetricsdk.Meter) error {
     {{- if ne $def.Units ""}}
     otelmetricsdk.WithUnit("{{$def.Units}}"),
     {{- end }}
+    {{- if ne (len $def.Buckets) 0 }}
+    otelmetricsdk.WithExplicitBucketBoundaries({{- range $i, $v := $def.Buckets }}{{ if $i }}, {{ end }}{{ $v }}{{- end }}),
+    {{- end }}
   )
   return err
 }
