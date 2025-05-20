@@ -17,6 +17,10 @@ attributes:
     label:
         description: sample opaque label
         type: string
+    state:
+        description: state of something
+        type: string
+        enum : [on,off]
     label.optional:
         type : string
         description: sample optional opaque label
@@ -24,7 +28,7 @@ metrics:
     example.measurement:
         metric_type: float
         counter:
-        attributes: [label]
+        attributes: [label, state]
         optional_attributes : [label.optional]
 ```
 
@@ -39,6 +43,8 @@ metrics.ExampleMeasurement.Record(
     0.1, 
     // sets label=labelA
     "labelA",
+    // sets state="on"
+    example.EnumStateOn,
     // sets label.optional=labelB
     metrics.WithExampleMeasurementLabelOptional("labelB"),
 )
