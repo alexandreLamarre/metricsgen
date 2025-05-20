@@ -52,6 +52,61 @@ metrics.ExampleMeasurement.Record(
 
 Check `examples` folder for more comprehensive examples
 
+## Attributes
+
+Attributes are defined as follows:
+```yaml
+attributes:
+    # this is the attribute ID
+    your.attribute:
+        # required must be a valid otel attribute type, see examples
+        type: string
+        # optional description for documentation
+        description: Some information here
+        # optional : generate type safe enums for recording data
+        enum : [A,B,C]
+```
+
+## Metrics
+
+Metrics are defined as follows:
+```yaml
+metrics:
+    # this is the metric name, following naming otel convetions
+    your.metric:
+      # optional unit
+      unit : By
+      # optional short description
+      short: Some metric
+      # optional long description
+      long: "Collected using advanced system info, only available on the following linux distros: Ubuntu"
+      # optional : list of required attributes when recording a metric
+      attributes:
+        - foo
+      # optional : list of optional attributes when recording a metric
+      optional_attributes:
+        - system.specific.label
+```
+
+You must instantiate a specific metric type, the currently supported ones are  `counter`, `gauge` and `histogram`:
+```yaml
+metrics:
+    your.metric:
+        counter:
+            # required, can only be int,float,int64,float64
+            value_type: int
+```
+
+histograms come with default bucket boundaries, but you can define your own like so:
+```yaml
+metrics:
+    your.histogram.metric:
+        histogram:
+            # required, can only be int,float,int64,float64
+            value_type: int
+            buckets: [0.0, 1.2, 5.6, 1000, 100000.7]
+```
+
 ## Coming Soon
 
 - Generated prometheus code utils for type-safe [Perses](https://perses.dev/) dashboards.
