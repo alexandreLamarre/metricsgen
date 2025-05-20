@@ -161,6 +161,11 @@ func (m Metric) Validate(attrTable map[string]Attribute) error {
 		}
 	}
 
+	attrs := lo.Intersect(m.Attributes, m.OptionAttributes)
+	if len(attrs) > 0 {
+		return fmt.Errorf("%s defined in both attributes and optional attributes", strings.Join(attrs, ","))
+	}
+
 	return nil
 }
 
