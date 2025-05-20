@@ -1,7 +1,9 @@
 package metricsgen
 
 import (
+	"errors"
 	"fmt"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -35,6 +37,11 @@ var (
 type Config struct {
 	Attributes map[string]*Attribute `yaml:"attributes"`
 	Metrics    map[string]*Metric    `yaml:"metrics"`
+	logger     *slog.Logger
+}
+
+func (c *Config) SetLogger(l *slog.Logger) {
+	c.logger = l
 }
 
 func (c *Config) Sanitize() error {
@@ -54,19 +61,32 @@ func (c *Config) Sanitize() error {
 }
 
 func (c *Config) Validate() error {
+	if c.logger == nil {
+		return fmt.Errorf("internal error: no logger defined")
+	}
+	logger := c.logger
 	if c == nil {
+		logger.Error("config is nil")
 		return fmt.Errorf("config is nil")
 	}
 	if len(c.Attributes) == 0 && len(c.Metrics) == 0 {
+		c.logger.Error("config must have at least one attribute or metric")
 		return fmt.Errorf("config must have at least one attribute or metric")
 	}
-
+	var errs []error
 	for _, attribute := range c.Attributes {
-		if err := attribute.Validate(); err != nil {
-			return err
+		if err := attribute.Validate(logger); err != nil {
+			c.logger.With("attribute", attribute.Name).Error(err.Error())
+			errs = append(errs, err)
 		}
 	}
-	return nil
+
+	for _, m := range c.Metrics {
+		if err := m.Validate(logger, c.Attributes); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
 }
 
 type Attribute struct {
@@ -76,19 +96,32 @@ type Attribute struct {
 	Enum        []string `yaml:"enum,omitempty"`
 }
 
-func (a Attribute) Validate() error {
+var ErrInvalidAttribute = errors.New("invalid attribute")
+
+func (a Attribute) Validate(l *slog.Logger) error {
 	if a.Name == "" {
 		return fmt.Errorf("attribute has an empty name")
 	}
+	logger := l.With("attribute", a.Name)
+	invalid := false
 	if !slices.Contains(validAttributeTypes, a.Type) {
-		return fmt.Errorf("invalid type : `%s`, must be one of %s", a.Type, strings.Join(validAttributeTypes, ","))
+		invalid = true
+		logger.With("type", a.Type).Error(
+			fmt.Sprintf("invalid type, must be one of %s", strings.Join(validAttributeTypes, ",")),
+		)
 	}
 
 	if len(a.Enum) > 0 {
 		validEnumTypes := []string{"string", "int"}
 		if !slices.Contains(validEnumTypes, a.Type) {
-			return fmt.Errorf("enums not supported for type : %s, must be one of %s", a.Type, strings.Join(validEnumTypes, ","))
+			invalid = true
+			logger.With("type", a.Type).Error(
+				fmt.Sprintf("enum not supported for type, must be : %s", strings.Join(validEnumTypes, ",")),
+			)
 		}
+	}
+	if invalid {
+		return ErrInvalidAttribute
 	}
 	return nil
 }
@@ -128,12 +161,17 @@ type Metric struct {
 	OptionAttributes   []string `yaml:"optional_attributes"`
 }
 
-func (m Metric) Validate(attrTable map[string]Attribute) error {
+var ErrInvalidMetric = errors.New("invalid metric")
+
+func (m Metric) Validate(l *slog.Logger, attrTable map[string]*Attribute) error {
 	if m.Name == "" {
 		return fmt.Errorf("metric has an empty name")
 	}
+	invalid := false
+	logger := l.With("metric", m.Name)
 	if !slices.Contains(validMetricTypes, m.ValueType) {
-		return fmt.Errorf("invalid value type : `%s`, must be one of : %s", m.ValueType, strings.Join(validMetricTypes, ","))
+		logger.Error("invalid value type : `%s`, must be one of : %s", m.ValueType, strings.Join(validMetricTypes, ","))
+		invalid = true
 	}
 	count := 0
 	if m.MetricTypeExpHist != nil {
@@ -149,30 +187,47 @@ func (m Metric) Validate(attrTable map[string]Attribute) error {
 		count += 1
 	}
 	if count == 0 {
-		return fmt.Errorf("no metric types declared")
+		invalid = true
+		logger.Error("no metric types declared")
 	}
 	if count > 1 {
-		return fmt.Errorf("multiple metric types declated for metric")
+		invalid = true
+		logger.Error("multiple metric types declated for metric")
 	}
 	if util.HasDuplicateStrings(m.Attributes) {
-		return fmt.Errorf("duplicate attribute registered to metric")
+		logger.Error("duplicate attribute registered to metric")
+		invalid = true
 	}
 
 	for _, attr := range m.Attributes {
 		if _, ok := attrTable[attr]; !ok {
-			return fmt.Errorf("no defined attribute for : `%s`", attr)
+			invalid = true
+			logger.With("attribute", attr).Error("no attribute definition")
 		}
 	}
 
 	for _, attr := range m.OptionAttributes {
 		if _, ok := attrTable[attr]; !ok {
-			return fmt.Errorf("no defined attribute for : `%s`", attr)
+			invalid = true
+			logger.With("attribute", attr).Error("no matching optional attribute")
 		}
 	}
 
 	attrs := lo.Intersect(m.Attributes, m.OptionAttributes)
 	if len(attrs) > 0 {
-		return fmt.Errorf("%s defined in both attributes and optional attributes", strings.Join(attrs, ","))
+		invalid = true
+		for _, attr := range attrs {
+			logger.With("attribute", attr).Error("attribute defined as both required and optional")
+		}
+	}
+
+	if err := m.checkMetricValueType(); err != nil {
+		invalid = true
+		logger.Error("metrics must have `gauge`,`counter` or `histogram` specs defined")
+	}
+
+	if invalid {
+		return ErrInvalidMetric
 	}
 
 	return nil
@@ -310,6 +365,22 @@ func (c *Config) ToDocsTemplateDefinition() templates.DocConfig {
 	return templates.DocConfig{
 		Metrics: ret,
 	}
+}
+
+func (m Metric) checkMetricValueType() error {
+	if m.MetricTypeCounter != nil {
+		return nil
+	}
+	if m.MetricTypeGauge != nil {
+		return nil
+	}
+	if m.MetricTypeHist != nil {
+		return nil
+	}
+	if m.MetricTypeExpHist != nil {
+		return nil
+	}
+	return fmt.Errorf("unknown metric type")
 }
 
 func (m Metric) metricValueType() string {

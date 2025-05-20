@@ -2,7 +2,10 @@ package main
 
 import (
 	"go/format"
+	"log/slog"
 	"os"
+
+	_ "github.com/alexandreLamarre/metricsgen/pkg/logger"
 
 	"github.com/alexandreLamarre/metricsgen/pkg/metricsgen"
 	"github.com/alexandreLamarre/metricsgen/pkg/templates"
@@ -17,22 +20,28 @@ func BuildGenerateCmd() *cobra.Command {
 		Use:     "metricsgen <filename>",
 		Version: version.FriendlyVersion(),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			logger := slog.Default()
 			genFile := args[0]
 			var curPkg string
 			curPkg = os.Getenv("GOPACKAGE")
 			if curPkg == "" {
 				curPkg = "metrics"
 			}
+			logger = logger.With("package", curPkg, "metrics-file", genFile)
 
 			data, err := os.ReadFile(genFile)
 			if err != nil {
+				logger.Error(err.Error())
 				return err
 			}
 			cfg := &metricsgen.Config{}
 			if err := yaml.Unmarshal(data, cfg); err != nil {
+				logger.Error(err.Error())
 				return err
 			}
+			cfg.SetLogger(logger)
 			if err := cfg.Sanitize(); err != nil {
+				logger.With("stage", "sanitization").Error(err.Error())
 				return err
 			}
 			if err := cfg.Validate(); err != nil {
@@ -58,11 +67,13 @@ func BuildGenerateCmd() *cobra.Command {
 				EnumTypes: cfg.ToEnumTemplateDefinition(),
 			})
 			if err != nil {
+				logger.With("stage", "codegen").Error(err.Error())
 				return err
 			}
 
 			metricsgen, err = format.Source(metricsgen)
 			if err != nil {
+				logger.With("stage", "formatting").Error(err.Error())
 				return err
 			}
 
@@ -72,6 +83,7 @@ func BuildGenerateCmd() *cobra.Command {
 
 			docsgen, err := templates.ExecuteDocs(cfg.ToDocsTemplateDefinition())
 			if err != nil {
+				logger.With("stage", "docgen")
 				return err
 			}
 
