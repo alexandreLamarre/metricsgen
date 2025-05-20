@@ -154,6 +154,13 @@ func (m Metric) Validate(attrTable map[string]Attribute) error {
 			return fmt.Errorf("no defined attribute for : `%s`", attr)
 		}
 	}
+
+	for _, attr := range m.OptionAttributes {
+		if _, ok := attrTable[attr]; !ok {
+			return fmt.Errorf("no defined attribute for : `%s`", attr)
+		}
+	}
+
 	return nil
 }
 
