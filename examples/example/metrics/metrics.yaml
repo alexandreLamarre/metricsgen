@@ -8,6 +8,15 @@ attributes:
     cpu.id:
         description : cpu id in the range [0, numCPU]
         type : int
+    cpu.mode:
+        description: cpu state
+        type: string
+        enum: [idle, active]
+    random.int:
+        description : random enum int
+        type: int
+        enum : [on, off]
+    
 metrics:
     dummy.tcp.connlat:
         short: TCP connection latency ms
@@ -22,6 +31,7 @@ metrics:
             - pid.gid
         optional_attributes:
             - cpu.id
+            - random.int
     dummy.tcp.rx:
         short: TCP received bytes
         long: Randomly generated tcp received bytes
@@ -32,6 +42,9 @@ metrics:
             aggregation: ""
         attributes:
             - pid
+            - random.int
+        optional_attributes:
+            - cpu.mode
     dummy.tcp.tx:
         short: TCP transmitted bytes
         long: Randomly generated tcp transmitted bytes
@@ -44,3 +57,4 @@ metrics:
             - pid
             - pid.gid
             - cpu.id
+            - cpu.mode

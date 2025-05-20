@@ -54,7 +54,8 @@ func BuildGenerateCmd() *cobra.Command {
 						Dependency: "go.opentelemetry.io/otel/attribute",
 					},
 				},
-				Metrics: cfg.ToTemplateDefinition(),
+				Metrics:   cfg.ToMetricsTemplateDefinition(),
+				EnumTypes: cfg.ToEnumTemplateDefinition(),
 			})
 			if err != nil {
 				return err

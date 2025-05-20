@@ -11,6 +11,20 @@ import (
   {{- end }}
 )
 
+{{- range $enum := .EnumTypes }}
+type {{ $enum.EnumType }} {{ $enum.ValueType }}
+
+func (e {{ $enum.EnumType }}) Val() {{ $enum.ValueType }} {
+  return {{ $enum.ValueType }}(e)
+}
+
+const (
+  {{- range $valueDef := .Values }}
+  Enum{{ $valueDef.ValueCase }} {{$enum.EnumType}}  = {{ $valueDef.Value }}
+  {{- end }}
+)
+{{- end }}
+
 type Metrics struct {
   {{- range $metricStructName, $_ := .Metrics }}
   *Metric{{ $metricStructName }}
@@ -73,7 +87,11 @@ func (m *Metric{{ $metricStructName }}) Record(
   optionalAttr := options.Attributes()
   requiredAttrs := []otelattribute.KeyValue{
     {{- range $def.RequiredAttributes }}
+      {{- if .Enum }}
+    otelattribute.{{ .Constructor}}("{{ .Name}}", {{ .Field}}.Val()),
+      {{- else }}
     otelattribute.{{ .Constructor}}("{{ .Name}}", {{ .Field}}),
+      {{- end }}
     {{- end }}
   }
 
@@ -106,7 +124,11 @@ func (o *Attribute{{$metricStructName}}Options) Attributes() []otelattribute.Key
   ret := []otelattribute.KeyValue{}
   {{- range $def.OptionalAttributes }}
   if o.{{ .Field }} != nil {
+    {{- if .Enum }}
+    ret = append(ret, otelattribute.{{ .Constructor }}("{{ .Name }}", (*o.{{.Field}}).Val()))
+    {{- else }}
     ret = append(ret, otelattribute.{{ .Constructor }}("{{ .Name }}", *o.{{.Field}}))
+    {{- end }}
   }
   {{- end }}
   return ret

@@ -71,8 +71,9 @@ func (c *Config) Validate() error {
 
 type Attribute struct {
 	Name        string
-	Description string `yaml:"description"`
-	Type        string `yaml:"type"`
+	Description string   `yaml:"description"`
+	Type        string   `yaml:"type"`
+	Enum        []string `yaml:"enum,omitempty"`
 }
 
 func (a Attribute) Validate() error {
@@ -81,6 +82,13 @@ func (a Attribute) Validate() error {
 	}
 	if !slices.Contains(validAttributeTypes, a.Type) {
 		return fmt.Errorf("invalid type : `%s`, must be one of %s", a.Type, strings.Join(validAttributeTypes, ","))
+	}
+
+	if len(a.Enum) > 0 {
+		validEnumTypes := []string{"string", "int"}
+		if !slices.Contains(validEnumTypes, a.Type) {
+			return fmt.Errorf("enums not supported for type : %s, must be one of %s", a.Type, strings.Join(validEnumTypes, ","))
+		}
 	}
 	return nil
 }
@@ -91,8 +99,9 @@ func (a Attribute) ToTemplateDefinition() templates.AttributeDef {
 		Field:       util.OtelStringToCamelCaseField(a.Name),
 		CamelCase:   util.OtelStringToCamelCase(a.Name),
 		Constructor: util.ValueTypeToAttributeConstructor(a.Type),
-		ValueType:   a.Type,
+		ValueType:   attributeValueType(a),
 		Description: a.Description,
+		Enum:        len(a.Enum) > 0,
 	}
 }
 
@@ -222,11 +231,52 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 	}
 }
 
-func (c *Config) ToTemplateDefinition() map[string]templates.MetricConfig {
+func (c *Config) ToMetricsTemplateDefinition() map[string]templates.MetricConfig {
 	ret := map[string]templates.MetricConfig{}
 	for _, m := range c.Metrics {
 		structName := util.OtelStringToCamelCase(m.Name)
 		ret[structName] = m.ToTemplateDefinition(c.Attributes)
+	}
+	return ret
+}
+
+func attributeValueType(a Attribute) string {
+	if len(a.Enum) > 0 {
+		return "Enum" + util.OtelStringToCamelCase(a.Name)
+	}
+	return a.Type
+}
+
+func (c *Config) ToEnumTemplateDefinition() []templates.EnumConfig {
+	ret := []templates.EnumConfig{}
+
+	for _, attr := range c.Attributes {
+		if len(attr.Enum) == 0 {
+			continue
+		}
+		cc := util.OtelStringToCamelCase(attr.Name)
+		t := templates.EnumConfig{
+			EnumType:  attributeValueType(*attr),
+			ValueType: attr.Type,
+			CamelCase: cc,
+			Values:    []templates.EnumValue{},
+		}
+
+		for idx, val := range attr.Enum {
+			if attr.Type == "string" {
+				t.Values = append(t.Values, templates.EnumValue{
+					ValueCase: util.OtelStringToCamelCase(val),
+					Value:     fmt.Sprintf(`"%s"`, val),
+				})
+			}
+			if attr.Type == "int" {
+				t.Values = append(t.Values, templates.EnumValue{
+					ValueCase: util.OtelStringToCamelCase(val),
+					Value:     idx,
+				})
+			}
+		}
+		ret = append(ret, t)
 	}
 	return ret
 }

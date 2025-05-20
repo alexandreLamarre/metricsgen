@@ -21,6 +21,7 @@ Randomly generated tcp connection latency
 | cpu.id | cpu id in the range [0, numCPU] | int | ❌ |
 | pid | Process ID | int | ✅ |
 | pid.gid | Process Group ID | int | ✅ |
+| random.int | random enum int | int | ❌ |
 
 
 ## dummy.tcp.rx
@@ -37,7 +38,9 @@ Randomly generated tcp received bytes
 
 | Name | Description | Type | Required |
 |------|-------------|------| ------- |
+| cpu.mode | cpu state | string | ❌ |
 | pid | Process ID | int | ✅ |
+| random.int | random enum int | int | ✅ |
 
 
 ## dummy.tcp.tx
@@ -55,6 +58,7 @@ Randomly generated tcp transmitted bytes
 | Name | Description | Type | Required |
 |------|-------------|------| ------- |
 | cpu.id | cpu id in the range [0, numCPU] | int | ✅ |
+| cpu.mode | cpu state | string | ✅ |
 | pid | Process ID | int | ✅ |
 | pid.gid | Process Group ID | int | ✅ |
 

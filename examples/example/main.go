@@ -48,18 +48,28 @@ func recordDummyMetrics(ctx context.Context, m metrics.Metrics) {
 			log.Println("exiting recording dummy metrics")
 		case <-t.C:
 			for x := range 16 {
+				randVal := rand.Int()
+				var recordEnum metrics.EnumRandomInt
+				if randVal%2 == 0 {
+					recordEnum = metrics.EnumOn
+				} else {
+					recordEnum = metrics.EnumOff
+				}
 				m.MetricDummyTcpConnlat.Record(
 					ctx,
 					rand.Float64(),
 					rand.Int(),
 					rand.Int(),
 					metrics.WithDummyTcpConnlatCpuId(x),
+					metrics.WithDummyTcpConnlatRandomInt(recordEnum),
 				)
 
 				m.MetricDummyTcpRx.Record(
 					ctx,
 					rand.Int63(),
 					rand.Int(),
+					recordEnum,
+					metrics.WithDummyTcpRxCpuMode(metrics.EnumActive),
 				)
 
 				m.MetricDummyTcpTx.Record(
@@ -68,6 +78,7 @@ func recordDummyMetrics(ctx context.Context, m metrics.Metrics) {
 					rand.Int(),
 					rand.Int(),
 					x,
+					metrics.EnumActive,
 				)
 			}
 		}

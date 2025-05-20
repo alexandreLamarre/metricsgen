@@ -31,6 +31,7 @@ type AttributeDef struct {
 	Constructor string
 	CamelCase   string
 	Description string
+	Enum        bool
 }
 
 type MetricConfig struct {
@@ -45,10 +46,24 @@ type MetricConfig struct {
 	OptionalAttributes []AttributeDef
 }
 
+type EnumConfig struct {
+	EnumType  string
+	ValueType string
+	CamelCase string
+	// set only if ValueType="string"
+	Values []EnumValue
+}
+
+type EnumValue struct {
+	ValueCase string
+	Value     any
+}
+
 type GenConfig struct {
 	PackageName string
 	ImportDefs  []ImportDef
 	Metrics     map[string]MetricConfig
+	EnumTypes   []EnumConfig
 }
 
 type DocConfig struct {

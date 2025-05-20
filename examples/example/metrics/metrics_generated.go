@@ -7,6 +7,28 @@ import (
 	otelmetricsdk "go.opentelemetry.io/otel/metric"
 )
 
+type EnumCpuMode string
+
+func (e EnumCpuMode) Val() string {
+	return string(e)
+}
+
+const (
+	EnumIdle   EnumCpuMode = "idle"
+	EnumActive EnumCpuMode = "active"
+)
+
+type EnumRandomInt int
+
+func (e EnumRandomInt) Val() int {
+	return int(e)
+}
+
+const (
+	EnumOn  EnumRandomInt = 0
+	EnumOff EnumRandomInt = 1
+)
+
 type Metrics struct {
 	*MetricDummyTcpConnlat
 	*MetricDummyTcpRx
@@ -75,7 +97,8 @@ func (m *MetricDummyTcpConnlat) Record(
 }
 
 type AttributeDummyTcpConnlatOptions struct {
-	cpuId *int
+	cpuId     *int
+	randomInt *EnumRandomInt
 }
 
 type AttributeDummyTcpConnlatOption func(*AttributeDummyTcpConnlatOptions)
@@ -91,6 +114,9 @@ func (o *AttributeDummyTcpConnlatOptions) Attributes() []otelattribute.KeyValue 
 	if o.cpuId != nil {
 		ret = append(ret, otelattribute.Int("cpu.id", *o.cpuId))
 	}
+	if o.randomInt != nil {
+		ret = append(ret, otelattribute.Int("random.int", (*o.randomInt).Val()))
+	}
 	return ret
 }
 
@@ -100,6 +126,15 @@ func WithDummyTcpConnlatCpuId(cpuId int) AttributeDummyTcpConnlatOption {
 	return func(o *AttributeDummyTcpConnlatOptions) {
 		val := &cpuId
 		o.cpuId = val
+	}
+}
+
+// WithDummyTcpConnlatRandomInt sets the optional random.int attribute
+// corresponding to random enum int
+func WithDummyTcpConnlatRandomInt(randomInt EnumRandomInt) AttributeDummyTcpConnlatOption {
+	return func(o *AttributeDummyTcpConnlatOptions) {
+		val := &randomInt
+		o.randomInt = val
 	}
 }
 
@@ -120,10 +155,12 @@ func (m *MetricDummyTcpRx) init(meter otelmetricsdk.Meter) error {
 
 // Record records a data point for the specified metric
 // - pid : Process ID
+// - randomInt : random enum int
 func (m *MetricDummyTcpRx) Record(
 	ctx context.Context,
 	value int64,
 	pid int,
+	randomInt EnumRandomInt,
 	attributeOpts ...AttributeDummyTcpRxOption,
 ) {
 	options := &AttributeDummyTcpRxOptions{}
@@ -131,6 +168,7 @@ func (m *MetricDummyTcpRx) Record(
 	optionalAttr := options.Attributes()
 	requiredAttrs := []otelattribute.KeyValue{
 		otelattribute.Int("pid", pid),
+		otelattribute.Int("random.int", randomInt.Val()),
 	}
 
 	attrs := otelattribute.NewSet(
@@ -140,6 +178,7 @@ func (m *MetricDummyTcpRx) Record(
 }
 
 type AttributeDummyTcpRxOptions struct {
+	cpuMode *EnumCpuMode
 }
 
 type AttributeDummyTcpRxOption func(*AttributeDummyTcpRxOptions)
@@ -152,7 +191,19 @@ func (o *AttributeDummyTcpRxOptions) Apply(opts ...AttributeDummyTcpRxOption) {
 
 func (o *AttributeDummyTcpRxOptions) Attributes() []otelattribute.KeyValue {
 	ret := []otelattribute.KeyValue{}
+	if o.cpuMode != nil {
+		ret = append(ret, otelattribute.String("cpu.mode", (*o.cpuMode).Val()))
+	}
 	return ret
+}
+
+// WithDummyTcpRxCpuMode sets the optional cpu.mode attribute
+// corresponding to cpu state
+func WithDummyTcpRxCpuMode(cpuMode EnumCpuMode) AttributeDummyTcpRxOption {
+	return func(o *AttributeDummyTcpRxOptions) {
+		val := &cpuMode
+		o.cpuMode = val
+	}
 }
 
 // MetricDummyTcpTx TCP transmitted bytes
@@ -174,12 +225,14 @@ func (m *MetricDummyTcpTx) init(meter otelmetricsdk.Meter) error {
 // - pid : Process ID
 // - pidGid : Process Group ID
 // - cpuId : cpu id in the range [0, numCPU]
+// - cpuMode : cpu state
 func (m *MetricDummyTcpTx) Record(
 	ctx context.Context,
 	value int64,
 	pid int,
 	pidGid int,
 	cpuId int,
+	cpuMode EnumCpuMode,
 	attributeOpts ...AttributeDummyTcpTxOption,
 ) {
 	options := &AttributeDummyTcpTxOptions{}
@@ -189,6 +242,7 @@ func (m *MetricDummyTcpTx) Record(
 		otelattribute.Int("pid", pid),
 		otelattribute.Int("pid.gid", pidGid),
 		otelattribute.Int("cpu.id", cpuId),
+		otelattribute.String("cpu.mode", cpuMode.Val()),
 	}
 
 	attrs := otelattribute.NewSet(
