@@ -278,6 +278,16 @@ func (c *Config) ToEnumTemplateDefinition() []templates.EnumConfig {
 		}
 		ret = append(ret, t)
 	}
+
+	slices.SortFunc(ret, func(a, b templates.EnumConfig) int {
+		if a.EnumType < b.EnumType {
+			return -1
+		}
+		if a.EnumType > b.EnumType {
+			return 1
+		}
+		return 0
+	})
 	return ret
 }
 
