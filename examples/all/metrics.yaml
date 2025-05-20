@@ -36,10 +36,8 @@ metrics:
     short: Example Counter
     long: Some extra details about what the Example Counter represents and how it is collected.
     unit : unit
-    metric_type: int
     counter:
-      value_type: ""
-      aggregation : ""
+      value_type: "int"
     attributes:
       - example.string
       - example.int
@@ -56,10 +54,8 @@ metrics:
     short: Example Counter
     long: Some extra details about what the Example Counter represents and how it is collected.
     unit : unit
-    metric_type: int
     counter:
-      value_type: ""
-      aggregation : ""
+      value_type: "int"
     optional_attributes:
       - example.string
       - example.int
@@ -76,10 +72,8 @@ metrics:
     short: Example Gauge
     long: Some extra details about what the Example Gauge represents and how it is collected.
     unit : unit
-    metric_type: float
     gauge:
-      value_type: ""
-      aggregation : ""
+      value_type: "float"
     attributes:
       - example.string
       - example.int
@@ -95,10 +89,8 @@ metrics:
     short: Example Gauge
     long: Some extra details about what the Example Gauge represents and how it is collected.
     unit : unit
-    metric_type: float
     gauge:
-      value_type: ""
-      aggregation : ""
+      value_type: "float"
     attributes:
       - example.string
       - example.int
@@ -114,10 +106,8 @@ metrics:
     short: Example Histogram
     long : "Some extra details about what the Example Histogram represents and how it is collected."
     unit: ms
-    metric_type: float
     histogram:
-        value_type: ""
-        aggregation: ""
+        value_type: "float"
     attributes:
       - example.string
       - example.int
@@ -133,10 +123,8 @@ metrics:
     short: Example Histogram
     long : "Some extra details about what the Example Histogram represents and how it is collected."
     unit: ms
-    metric_type: float
     histogram:
-        value_type: ""
-        aggregation: ""
+        value_type: "float"
     attributes:
       - example.string
       - example.int
@@ -152,9 +140,8 @@ metrics:
     short: Example Exponential Histogram
     long: ""
     unit: ms
-    metric_type: float
-    exponential_histogram:
-        value_type: ""
+    histogram:
+        value_type: "float"
         aggregation: ""
     attributes:
       - example.string

@@ -22,10 +22,8 @@ metrics:
         short: TCP connection latency ms
         long: "Randomly generated tcp connection latency"
         unit: ms
-        metric_type: float
         histogram:
-            value_type: ""
-            aggregation: ""
+            value_type: "float"
         attributes:
             - pid
             - pid.gid
@@ -36,10 +34,8 @@ metrics:
         short: TCP received bytes
         long: Randomly generated tcp received bytes
         unit: bytes
-        metric_type: int64
         gauge:
-            value_type: ""
-            aggregation: ""
+            value_type: "int64"
         attributes:
             - pid
             - random.int
@@ -49,10 +45,8 @@ metrics:
         short: TCP transmitted bytes
         long: Randomly generated tcp transmitted bytes
         unit: bytes
-        metric_type: int64
         counter:
-            value_type: ""
-            aggregation: ""
+            value_type: "int"
         attributes:
             - pid
             - pid.gid

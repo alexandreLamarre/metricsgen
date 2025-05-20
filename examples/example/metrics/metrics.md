@@ -51,7 +51,7 @@ Randomly generated tcp transmitted bytes
 
 | Unit | Metric Type | ValueType |
 | ---- | ------------ | --------- |
-| bytes | Counter | int64|
+| bytes | Counter | int|
 
 ### Attributes
 

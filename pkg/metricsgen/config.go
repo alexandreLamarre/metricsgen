@@ -152,13 +152,24 @@ type Metric struct {
 	Short              string `yaml:"short"`
 	Long               string `yaml:"long"`
 	Unit               string `yaml:"unit"`
-	ValueType          string `yaml:"metric_type"`
 	*MetricTypeCounter `yaml:"counter,omitempty"`
 	*MetricTypeGauge   `yaml:"gauge,omitempty"`
 	*MetricTypeHist    `yaml:"histogram,omitempty"`
-	*MetricTypeExpHist `yaml:"exponential_histogram,omitempty"`
 	Attributes         []string `yaml:"attributes"`
 	OptionAttributes   []string `yaml:"optional_attributes"`
+}
+
+func (m Metric) getValueType() string {
+	if m.MetricTypeCounter != nil {
+		return m.MetricTypeCounter.ValueType
+	}
+	if m.MetricTypeGauge != nil {
+		return m.MetricTypeGauge.ValueType
+	}
+	if m.MetricTypeHist != nil {
+		return m.MetricTypeHist.ValueType
+	}
+	return ""
 }
 
 var ErrInvalidMetric = errors.New("invalid metric")
@@ -169,14 +180,7 @@ func (m Metric) Validate(l *slog.Logger, attrTable map[string]*Attribute) error 
 	}
 	invalid := false
 	logger := l.With("metric", m.Name)
-	if !slices.Contains(validMetricTypes, m.ValueType) {
-		logger.Error("invalid value type : `%s`, must be one of : %s", m.ValueType, strings.Join(validMetricTypes, ","))
-		invalid = true
-	}
 	count := 0
-	if m.MetricTypeExpHist != nil {
-		count += 1
-	}
 	if m.MetricTypeGauge != nil {
 		count += 1
 	}
@@ -194,6 +198,19 @@ func (m Metric) Validate(l *slog.Logger, attrTable map[string]*Attribute) error 
 		invalid = true
 		logger.Error("multiple metric types declated for metric")
 	}
+
+	if err := m.checkMetricValueType(); err != nil {
+		invalid = true
+		logger.Error("metrics must have `gauge`,`counter` or `histogram` specs defined")
+	}
+
+	if !slices.Contains(validMetricTypes, m.getValueType()) {
+		logger.Error(
+			fmt.Sprintf("invalid value type : `%s`, must be one of : %s", m.getValueType(), strings.Join(validMetricTypes, ",")),
+		)
+		invalid = true
+	}
+
 	if util.HasDuplicateStrings(m.Attributes) {
 		logger.Error("duplicate attribute registered to metric")
 		invalid = true
@@ -221,11 +238,6 @@ func (m Metric) Validate(l *slog.Logger, attrTable map[string]*Attribute) error 
 		}
 	}
 
-	if err := m.checkMetricValueType(); err != nil {
-		invalid = true
-		logger.Error("metrics must have `gauge`,`counter` or `histogram` specs defined")
-	}
-
 	if invalid {
 		return ErrInvalidMetric
 	}
@@ -241,8 +253,8 @@ func (m Metric) ToTemplateDefinition(attrTable map[string]*Attribute) templates.
 		Name:        m.Name,
 		Description: m.Short,
 		Units:       m.Unit,
-		ValueType:   otelValueType(m.ValueType),
-		Value:       goValueType(m.ValueType),
+		ValueType:   otelValueType(m.getValueType()),
+		Value:       goValueType(m.getValueType()),
 		MetricType:  m.metricValueType(),
 		RequiredAttributes: lo.Map(requiredAttrs, func(a Attribute, _ int) templates.AttributeDef {
 			return a.ToTemplateDefinition()
@@ -281,7 +293,7 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 		Long:       m.Long,
 		Unit:       m.Unit,
 		MetricType: m.metricValueType(),
-		ValueType:  m.ValueType,
+		ValueType:  m.getValueType(),
 		Attributes: ret,
 	}
 }
@@ -377,9 +389,6 @@ func (m Metric) checkMetricValueType() error {
 	if m.MetricTypeHist != nil {
 		return nil
 	}
-	if m.MetricTypeExpHist != nil {
-		return nil
-	}
 	return fmt.Errorf("unknown metric type")
 }
 
@@ -393,25 +402,19 @@ func (m Metric) metricValueType() string {
 	if m.MetricTypeHist != nil {
 		return "Histogram"
 	}
-	if m.MetricTypeExpHist != nil {
-		return "Histogram"
-	}
 	panic("unregisted metric type")
 }
 
 type MetricTypeCounter struct {
-	ValueType   string `yaml:"value_type"`
-	Aggregation string `yaml:"aggregation"`
+	ValueType string `yaml:"value_type"`
 }
 
 type MetricTypeGauge struct {
-	ValueType   string `yaml:"value_type"`
-	Aggregation string `yaml:"aggregation"`
+	ValueType string `yaml:"value_type"`
 }
 
 type MetricTypeHist struct {
-	ValueType   string `yaml:"value_type"`
-	Aggregation string `yaml:"aggregation"`
+	ValueType string `yaml:"value_type"`
 }
 
 type MetricTypeExpHist struct {
