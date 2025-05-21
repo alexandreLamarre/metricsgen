@@ -15,6 +15,7 @@ import (
 )
 
 func BuildGenerateCmd() *cobra.Command {
+	var extraFiles []string
 	cmd := &cobra.Command{
 		Args:    cobra.ExactArgs(1),
 		Use:     "metricsgen <filename>",
@@ -28,7 +29,7 @@ func BuildGenerateCmd() *cobra.Command {
 				curPkg = "metrics"
 			}
 			logger = logger.With("package", curPkg, "metrics-file", genFile)
-
+			logger.Info("reading base configuration")
 			data, err := os.ReadFile(genFile)
 			if err != nil {
 				logger.Error(err.Error())
@@ -39,11 +40,44 @@ func BuildGenerateCmd() *cobra.Command {
 				logger.Error(err.Error())
 				return err
 			}
+			cfg.SetSource(genFile)
 			cfg.SetLogger(logger)
 			if err := cfg.Sanitize(); err != nil {
 				logger.With("stage", "sanitization").Error(err.Error())
 				return err
 			}
+			extraCfgs := []*metricsgen.Config{}
+			for _, f := range extraFiles {
+				logger := logger.With("file", f)
+				logger.Info("reading extra configuration")
+				data, err := os.ReadFile(f)
+				if err != nil {
+					logger.Error(err.Error())
+					return err
+				}
+
+				extraCfg := &metricsgen.Config{}
+				if err := yaml.Unmarshal(data, extraCfg); err != nil {
+					logger.Error(err.Error())
+					return err
+				}
+				extraCfg.SetSource(f)
+
+				if err := extraCfg.Sanitize(); err != nil {
+					logger.With("stage", "sanitization").Error(err.Error())
+				}
+
+				extraCfgs = append(extraCfgs, extraCfg)
+			}
+
+			if len(extraCfgs) > 0 {
+				logger.Info("merging configurations")
+				if err := cfg.Merge(extraCfgs...); err != nil {
+					logger.Error(err.Error())
+					return err
+				}
+			}
+			logger.Info("validating configuration")
 			if err := cfg.Validate(); err != nil {
 				return err
 			}
@@ -93,6 +127,8 @@ func BuildGenerateCmd() *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().StringArrayVarP(&extraFiles, "extra-files", "f", []string{}, "extra metricsgen files to aggregate during generation")
 
 	return cmd
 }

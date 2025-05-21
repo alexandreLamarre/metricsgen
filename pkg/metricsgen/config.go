@@ -38,6 +38,64 @@ type Config struct {
 	Attributes map[string]*Attribute `yaml:"attributes"`
 	Metrics    map[string]*Metric    `yaml:"metrics"`
 	logger     *slog.Logger
+	source     string
+}
+
+func (c *Config) SetSource(s string) {
+	c.source = s
+}
+
+func (c *Config) Merge(cfgs ...*Config) error {
+	for _, cfg := range cfgs {
+		c.logger.With("source", cfg.source).Info("merging configs")
+		if err := c.merge(cfg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+var ErrInvalidConfig = errors.New("invalid config")
+
+func (c *Config) merge(incoming *Config) error {
+
+	ourAttrs := lo.Keys(c.Attributes)
+	theirAttrs := lo.Keys(incoming.Attributes)
+
+	dupAttrs := lo.Intersect(ourAttrs, theirAttrs)
+	invalid := false
+	if len(dupAttrs) > 0 {
+		invalid = true
+		for _, attr := range dupAttrs {
+			c.logger.With("attr", attr, "mergeTarget", incoming.source).Error("duplicate attribute defined")
+		}
+	}
+
+	ourMetrics := lo.Keys(c.Metrics)
+	theirMetrics := lo.Keys(incoming.Metrics)
+	dupMetrics := lo.Intersect(ourMetrics, theirMetrics)
+	if len(dupMetrics) > 0 {
+		invalid = true
+		for _, m := range dupMetrics {
+			c.logger.With("metric", m, "mergeTarget", incoming.source).Error("duplicate metric defined")
+		}
+	}
+
+	if invalid {
+		return ErrInvalidConfig
+	}
+
+	c.Attributes = lo.Assign(
+		c.Attributes,
+		incoming.Attributes,
+	)
+
+	c.Metrics = lo.Assign(
+		c.Metrics,
+		incoming.Metrics,
+	)
+
+	return nil
 }
 
 func (c *Config) SetLogger(l *slog.Logger) {
