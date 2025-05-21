@@ -110,6 +110,4 @@ metrics:
 ## Coming Soon
 
 - Generated prometheus code utils for type-safe [Perses](https://perses.dev/) dashboards.
-- Some form of importing and merging attribute files
 - Customizing some cli output options
-- Maybe some form of importing and merging metric files
