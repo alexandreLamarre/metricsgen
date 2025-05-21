@@ -1,0 +1,16 @@
+attributes:
+  example.string:
+    description: Example string value
+    type: string
+  example.int:
+    description: Example int value
+    type : int
+  example.float:
+    description: Example float value
+    type : float64
+  example.bool:
+    description: Example boolean value
+    type : "bool"
+  example.int64:
+    description: Example int64 value
+    type : int64

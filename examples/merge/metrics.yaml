@@ -1,0 +1,125 @@
+
+metrics:
+  example.counter:
+    short: Example Counter
+    long: Some extra details about what the Example Counter represents and how it is collected.
+    unit : unit
+    counter:
+      value_type: "int"
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+
+  example.counter.optional:
+    short: Example Counter
+    long: Some extra details about what the Example Counter represents and how it is collected.
+    unit : unit
+    counter:
+      value_type: "int"
+    optional_attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+
+  example.gauge:
+    short: Example Gauge
+    long: Some extra details about what the Example Gauge represents and how it is collected.
+    unit : unit
+    gauge:
+      value_type: "float"
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+  example.gauge.optional:
+    short: Example Gauge
+    long: Some extra details about what the Example Gauge represents and how it is collected.
+    unit : unit
+    gauge:
+      value_type: "float"
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+  example.histogram:
+    short: Example Histogram
+    long : "Some extra details about what the Example Histogram represents and how it is collected."
+    unit: ms
+    histogram:
+        value_type: "float"
+        buckets: [1,2,3,4]
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+  example.histogram.optional:
+    short: Example Histogram
+    long : "Some extra details about what the Example Histogram represents and how it is collected."
+    unit: ms
+    histogram:
+        value_type: "float"
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice
+  example.exponential_histogram:
+    short: Example Exponential Histogram
+    long: ""
+    unit: ms
+    histogram:
+        value_type: "float"
+        aggregation: ""
+    attributes:
+      - example.string
+      - example.int
+      - example.float
+      - example.bool
+      - example.int64
+      - example.floatSlice
+      - example.boolSlice
+      - example.intSlice
+      - example.int64Slice
+      - example.stringSlice

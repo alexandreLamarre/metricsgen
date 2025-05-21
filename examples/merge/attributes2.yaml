@@ -1,0 +1,16 @@
+attributes:
+  example.boolSlice:
+    description : Example bool slice value
+    type : "[]bool"
+  example.floatSlice:
+    description : Example float slice value
+    type : "[]float64"
+  example.intSlice:
+    description : Example int slice value
+    type : "[]int"
+  example.int64Slice:
+    description : Example int64 slice value
+    type : "[]int64"
+  example.stringSlice:
+    description : Example int slice value
+    type : "[]string"
