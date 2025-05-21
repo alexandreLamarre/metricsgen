@@ -111,3 +111,4 @@ metrics:
 
 - Generated prometheus code utils for type-safe [Perses](https://perses.dev/) dashboards.
 - Customizing some cli output options
+- Type-safe garbage-collected metrics / type-safe observable implementation
