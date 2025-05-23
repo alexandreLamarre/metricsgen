@@ -129,6 +129,41 @@ func BuildGenerateCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringArrayVarP(&extraFiles, "extra-files", "f", []string{}, "extra metricsgen files to aggregate during generation")
+	validateCmd := &cobra.Command{
+		Use:   "validate",
+		Short: "Validate the metricsgen file",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			genFile := args[0]
+			logger := slog.Default()
+			logger = logger.With("metrics-file", genFile)
+
+			data, err := os.ReadFile(genFile)
+			if err != nil {
+				logger.Error(err.Error())
+				return err
+			}
+			cfg := &metricsgen.Config{}
+			if err := yaml.Unmarshal(data, cfg); err != nil {
+				logger.Error(err.Error())
+				return err
+			}
+			cfg.SetSource(genFile)
+			cfg.SetLogger(logger)
+			if err := cfg.Sanitize(); err != nil {
+				logger.With("stage", "sanitization").Error(err.Error())
+				return err
+			}
+
+			if err := cfg.Validate(); err != nil {
+				logger.With("stage", "validation").Error(err.Error())
+			}
+			logger.Info("configuration is valid")
+			return nil
+
+		},
+	}
+	cmd.AddCommand(validateCmd)
 
 	return cmd
 }
