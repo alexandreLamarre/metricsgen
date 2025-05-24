@@ -7,6 +7,7 @@ import (
 	otelmetricsdk "go.opentelemetry.io/otel/metric"
 )
 
+// EnumCpuMode cpu state
 type EnumCpuMode string
 
 func (e EnumCpuMode) Val() string {
@@ -18,6 +19,7 @@ const (
 	EnumCpuModeActive EnumCpuMode = "active"
 )
 
+// EnumRandomInt random enum int
 type EnumRandomInt int
 
 func (e EnumRandomInt) Val() int {
@@ -73,8 +75,9 @@ func (m *MetricDummyTcpConnlat) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - pid : Process ID
-// - pidGid : Process Group ID
+//
+// • pid : Process ID
+// • pidGid : Process Group ID
 func (m *MetricDummyTcpConnlat) Record(
 	ctx context.Context,
 	value float64,
@@ -154,8 +157,9 @@ func (m *MetricDummyTcpRx) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - pid : Process ID
-// - randomInt : random enum int
+//
+// • pid : Process ID
+// • randomInt : random enum int
 func (m *MetricDummyTcpRx) Record(
 	ctx context.Context,
 	value int64,
@@ -222,10 +226,11 @@ func (m *MetricDummyTcpTx) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - pid : Process ID
-// - pidGid : Process Group ID
-// - cpuId : cpu id in the range [0, numCPU]
-// - cpuMode : cpu state
+//
+// • pid : Process ID
+// • pidGid : Process Group ID
+// • cpuId : cpu id in the range [0, numCPU]
+// • cpuMode : cpu state
 func (m *MetricDummyTcpTx) Record(
 	ctx context.Context,
 	value int64,

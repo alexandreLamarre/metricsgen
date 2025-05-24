@@ -48,9 +48,10 @@ type MetricConfig struct {
 }
 
 type EnumConfig struct {
-	EnumType  string
-	ValueType string
-	CamelCase string
+	EnumType    string
+	Description string
+	ValueType   string
+	CamelCase   string
 	// set only if ValueType="string"
 	Values []EnumValue
 }

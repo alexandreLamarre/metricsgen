@@ -7,6 +7,7 @@ import (
 	otelmetricsdk "go.opentelemetry.io/otel/metric"
 )
 
+// EnumExampleEnum Example enum
 type EnumExampleEnum string
 
 func (e EnumExampleEnum) Val() string {
@@ -18,6 +19,7 @@ const (
 	EnumExampleEnumOff EnumExampleEnum = "off"
 )
 
+// EnumExampleEnum2 Example enum 2
 type EnumExampleEnum2 string
 
 func (e EnumExampleEnum2) Val() string {
@@ -97,18 +99,19 @@ func (m *MetricExampleCounter) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - exampleString : Example string value
-// - exampleInt : Example int value
-// - exampleFloat : Example float value
-// - exampleBool : Example boolean value
-// - exampleInt64 : Example int64 value
-// - exampleFloatSlice : Example float slice value
-// - exampleBoolSlice : Example bool slice value
-// - exampleIntSlice : Example int slice value
-// - exampleInt64Slice : Example int64 slice value
-// - exampleStringSlice : Example int slice value
-// - exampleEnum : Example enum
-// - exampleEnum2 : Example enum 2
+//
+// • exampleString : Example string value
+// • exampleInt : Example int value
+// • exampleFloat : Example float value
+// • exampleBool : Example boolean value
+// • exampleInt64 : Example int64 value
+// • exampleFloatSlice : Example float slice value
+// • exampleBoolSlice : Example bool slice value
+// • exampleIntSlice : Example int slice value
+// • exampleInt64Slice : Example int64 slice value
+// • exampleStringSlice : Example int slice value
+// • exampleEnum : Example enum
+// • exampleEnum2 : Example enum 2
 func (m *MetricExampleCounter) Record(
 	ctx context.Context,
 	value int64,
@@ -182,6 +185,7 @@ func (m *MetricExampleCounterOptional) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
+
 func (m *MetricExampleCounterOptional) Record(
 	ctx context.Context,
 	value int64,
@@ -360,16 +364,17 @@ func (m *MetricExampleExponentialHistogram) init(meter otelmetricsdk.Meter) erro
 }
 
 // Record records a data point for the specified metric
-// - exampleString : Example string value
-// - exampleInt : Example int value
-// - exampleFloat : Example float value
-// - exampleBool : Example boolean value
-// - exampleInt64 : Example int64 value
-// - exampleFloatSlice : Example float slice value
-// - exampleBoolSlice : Example bool slice value
-// - exampleIntSlice : Example int slice value
-// - exampleInt64Slice : Example int64 slice value
-// - exampleStringSlice : Example int slice value
+//
+// • exampleString : Example string value
+// • exampleInt : Example int value
+// • exampleFloat : Example float value
+// • exampleBool : Example boolean value
+// • exampleInt64 : Example int64 value
+// • exampleFloatSlice : Example float slice value
+// • exampleBoolSlice : Example bool slice value
+// • exampleIntSlice : Example int slice value
+// • exampleInt64Slice : Example int64 slice value
+// • exampleStringSlice : Example int slice value
 func (m *MetricExampleExponentialHistogram) Record(
 	ctx context.Context,
 	value float64,
@@ -439,16 +444,17 @@ func (m *MetricExampleGauge) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - exampleString : Example string value
-// - exampleInt : Example int value
-// - exampleFloat : Example float value
-// - exampleBool : Example boolean value
-// - exampleInt64 : Example int64 value
-// - exampleFloatSlice : Example float slice value
-// - exampleBoolSlice : Example bool slice value
-// - exampleIntSlice : Example int slice value
-// - exampleInt64Slice : Example int64 slice value
-// - exampleStringSlice : Example int slice value
+//
+// • exampleString : Example string value
+// • exampleInt : Example int value
+// • exampleFloat : Example float value
+// • exampleBool : Example boolean value
+// • exampleInt64 : Example int64 value
+// • exampleFloatSlice : Example float slice value
+// • exampleBoolSlice : Example bool slice value
+// • exampleIntSlice : Example int slice value
+// • exampleInt64Slice : Example int64 slice value
+// • exampleStringSlice : Example int slice value
 func (m *MetricExampleGauge) Record(
 	ctx context.Context,
 	value float64,
@@ -518,16 +524,17 @@ func (m *MetricExampleGaugeOptional) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - exampleString : Example string value
-// - exampleInt : Example int value
-// - exampleFloat : Example float value
-// - exampleBool : Example boolean value
-// - exampleInt64 : Example int64 value
-// - exampleFloatSlice : Example float slice value
-// - exampleBoolSlice : Example bool slice value
-// - exampleIntSlice : Example int slice value
-// - exampleInt64Slice : Example int64 slice value
-// - exampleStringSlice : Example int slice value
+//
+// • exampleString : Example string value
+// • exampleInt : Example int value
+// • exampleFloat : Example float value
+// • exampleBool : Example boolean value
+// • exampleInt64 : Example int64 value
+// • exampleFloatSlice : Example float slice value
+// • exampleBoolSlice : Example bool slice value
+// • exampleIntSlice : Example int slice value
+// • exampleInt64Slice : Example int64 slice value
+// • exampleStringSlice : Example int slice value
 func (m *MetricExampleGaugeOptional) Record(
 	ctx context.Context,
 	value float64,
@@ -598,16 +605,17 @@ func (m *MetricExampleHistogram) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - exampleString : Example string value
-// - exampleInt : Example int value
-// - exampleFloat : Example float value
-// - exampleBool : Example boolean value
-// - exampleInt64 : Example int64 value
-// - exampleFloatSlice : Example float slice value
-// - exampleBoolSlice : Example bool slice value
-// - exampleIntSlice : Example int slice value
-// - exampleInt64Slice : Example int64 slice value
-// - exampleStringSlice : Example int slice value
+//
+// • exampleString : Example string value
+// • exampleInt : Example int value
+// • exampleFloat : Example float value
+// • exampleBool : Example boolean value
+// • exampleInt64 : Example int64 value
+// • exampleFloatSlice : Example float slice value
+// • exampleBoolSlice : Example bool slice value
+// • exampleIntSlice : Example int slice value
+// • exampleInt64Slice : Example int64 slice value
+// • exampleStringSlice : Example int slice value
 func (m *MetricExampleHistogram) Record(
 	ctx context.Context,
 	value float64,
@@ -677,16 +685,17 @@ func (m *MetricExampleHistogramOptional) init(meter otelmetricsdk.Meter) error {
 }
 
 // Record records a data point for the specified metric
-// - exampleString : Example string value
-// - exampleInt : Example int value
-// - exampleFloat : Example float value
-// - exampleBool : Example boolean value
-// - exampleInt64 : Example int64 value
-// - exampleFloatSlice : Example float slice value
-// - exampleBoolSlice : Example bool slice value
-// - exampleIntSlice : Example int slice value
-// - exampleInt64Slice : Example int64 slice value
-// - exampleStringSlice : Example int slice value
+//
+// • exampleString : Example string value
+// • exampleInt : Example int value
+// • exampleFloat : Example float value
+// • exampleBool : Example boolean value
+// • exampleInt64 : Example int64 value
+// • exampleFloatSlice : Example float slice value
+// • exampleBoolSlice : Example bool slice value
+// • exampleIntSlice : Example int slice value
+// • exampleInt64Slice : Example int64 slice value
+// • exampleStringSlice : Example int slice value
 func (m *MetricExampleHistogramOptional) Record(
 	ctx context.Context,
 	value float64,

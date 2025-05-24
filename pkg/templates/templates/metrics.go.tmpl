@@ -12,6 +12,7 @@ import (
 )
 
 {{- range $enum := .EnumTypes }}
+{{ if not (eq $enum.Description "")}}// {{$enum.EnumType}} {{ $enum.Description }}{{- end }}
 type {{ $enum.EnumType }} {{ $enum.ValueType }}
 
 func (e {{ $enum.EnumType }}) Val() {{ $enum.ValueType }} {
@@ -31,7 +32,7 @@ type Metrics struct {
   {{- end }}
 }
 
-//NewMetrics initializes the set of following metrics
+// NewMetrics initializes the set of following metrics
 {{- range $metricStructName, $def := .Metrics }}
 //- {{$metricStructName}} {{ if ne $def.Description ""}} : {{$def.Description}} {{end}}
 {{- end }}
@@ -49,7 +50,7 @@ func NewMetrics(meter otelmetricsdk.Meter) (Metrics, error) {
   return m, nil
 }
 {{ range $metricStructName, $def := .Metrics }}
-//Metric{{ $metricStructName }} {{ $def.Description }}
+// Metric{{ $metricStructName }} {{ $def.Description }}
 type Metric{{ $metricStructName }} struct{
     data  otelmetricsdk.{{ $def.ValueType }}{{ $def.MetricType }}
 }
@@ -71,10 +72,11 @@ func (m *Metric{{ $metricStructName }}) init(meter otelmetricsdk.Meter) error {
   return err
 }
 
-//Record records a data point for the specified metric
+// Record records a data point for the specified metric
+{{ if gt (len $def.RequiredAttributes) 0}}// {{ end }} 
 {{- range $def.RequiredAttributes }}
 {{- if .Description}}
-//- {{ .Field }} : {{ .Description }}
+// • {{ .Field }} : {{ .Description }}
 {{- end }}
 {{- end }}
 func (m *Metric{{ $metricStructName }}) Record(
@@ -138,8 +140,8 @@ func (o *Attribute{{$metricStructName}}Options) Attributes() []otelattribute.Key
 }
 {{ range $def.OptionalAttributes}}
 {{- if ne $def.Description ""}}
-//With{{$metricStructName}}{{.CamelCase}} sets the optional {{ .Name }} attribute
-//corresponding to {{.Description}}
+// With{{$metricStructName}}{{.CamelCase}} sets the optional {{ .Name }} attribute
+// corresponding to {{.Description}}
 {{- end }}
 func With{{$metricStructName}}{{.CamelCase}}({{.Field}} {{ .ValueType }}) Attribute{{$metricStructName}}Option {
   return func(o *Attribute{{$metricStructName}}Options) {

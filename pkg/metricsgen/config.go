@@ -393,10 +393,11 @@ func (c *Config) ToEnumTemplateDefinition() []templates.EnumConfig {
 		}
 		cc := util.OtelStringToCamelCase(attr.Name)
 		t := templates.EnumConfig{
-			EnumType:  attributeValueType(*attr),
-			ValueType: attr.Type,
-			CamelCase: cc,
-			Values:    []templates.EnumValue{},
+			EnumType:    attributeValueType(*attr),
+			Description: attr.Description,
+			ValueType:   attr.Type,
+			CamelCase:   cc,
+			Values:      []templates.EnumValue{},
 		}
 
 		for idx, val := range attr.Enum {
