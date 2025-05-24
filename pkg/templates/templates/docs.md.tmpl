@@ -11,16 +11,16 @@
 
 {{$metric.Long}}
 
-| Unit | Metric Type | ValueType |
-| ---- | ------------ | --------- |
-| {{$metric.Unit }} | {{$metric.MetricType }} | {{ $metric.ValueType }}|
+| Prometheus name | Unit | Metric Type | ValueType |
+| --------------- |  ---- | ------------ | --------- |
+| {{$metric.PrometheusName}} | {{$metric.Unit }} | {{$metric.MetricType }} | {{ $metric.ValueType }}|
 
 ### Attributes
 
-| Name | Description | Type | Required |
-|------|-------------|------| ------- |
+| Name | Prometheus label | Description | Type | Required |
+|------| ---------------- |-------------|------| ------- |
 {{- range $metric.Attributes }}
-| {{ .Name }} | {{ .Description }} | {{ .ValueType }} | {{- if .Required}} ✅ {{- else}} ❌ {{- end }} |
+| {{ .Name }} | {{ .PrometheusLabel }} | {{ .Description }} | {{ .ValueType }} | {{- if .Required}} ✅ {{- else}} ❌ {{- end }} |
 {{- end }}
 
 {{ end }}

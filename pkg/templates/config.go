@@ -72,19 +72,21 @@ type DocConfig struct {
 }
 
 type DocMetric struct {
-	Name       string
-	Link       string
-	Short      string
-	Long       string
-	Unit       string
-	MetricType string
-	ValueType  string
-	Attributes []DocAttribute
+	Name           string
+	PrometheusName string
+	Link           string
+	Short          string
+	Long           string
+	Unit           string
+	MetricType     string
+	ValueType      string
+	Attributes     []DocAttribute
 }
 
 type DocAttribute struct {
-	Name        string
-	Description string
-	ValueType   string
-	Required    bool
+	Name            string
+	PrometheusLabel string
+	Description     string
+	ValueType       string
+	Required        bool
 }

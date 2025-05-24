@@ -5,6 +5,7 @@ import (
 
 	"github.com/alexandreLamarre/metricsgen/pkg/util"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 )
 
 type stringConversionTc struct {
@@ -54,4 +55,22 @@ func TestUtilCamelCaseField(t *testing.T) {
 		got := util.OtelStringToCamelCaseField(tc.in)
 		require.Equal(t, tc.expected, got)
 	}
+}
+
+func TestPrometheusName(t *testing.T) {
+	g := util.NewPrometheusNameGenerator()
+
+	name := g.GetPrometheusName(metricdata.Metrics{
+		Name: "dummy.tcp.connlat",
+		Unit: "By",
+	}, false)
+
+	require.Equal(t, "dummy_tcp_connlat_bytes", name)
+
+	cName := g.GetPrometheusName(metricdata.Metrics{
+		Name: "dummy.tcp.rx",
+		Unit: "By",
+	}, true)
+
+	require.Equal(t, "dummy_tcp_rx_bytes_total", cName)
 }

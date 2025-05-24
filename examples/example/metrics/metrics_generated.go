@@ -148,7 +148,7 @@ func (m *MetricDummyTcpRx) init(meter otelmetricsdk.Meter) error {
 	m.data, err = meter.Int64Gauge(
 		"dummy.tcp.rx",
 		otelmetricsdk.WithDescription("TCP received bytes"),
-		otelmetricsdk.WithUnit("bytes"),
+		otelmetricsdk.WithUnit("By"),
 	)
 	return err
 }
@@ -216,7 +216,7 @@ func (m *MetricDummyTcpTx) init(meter otelmetricsdk.Meter) error {
 	m.data, err = meter.Int64Counter(
 		"dummy.tcp.tx",
 		otelmetricsdk.WithDescription("TCP transmitted bytes"),
-		otelmetricsdk.WithUnit("bytes"),
+		otelmetricsdk.WithUnit("By"),
 	)
 	return err
 }

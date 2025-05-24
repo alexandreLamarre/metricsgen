@@ -33,7 +33,7 @@ metrics:
     dummy.tcp.rx:
         short: TCP received bytes
         long: Randomly generated tcp received bytes
-        unit: bytes
+        unit: By
         gauge:
             value_type: "int64"
         attributes:
@@ -44,7 +44,7 @@ metrics:
     dummy.tcp.tx:
         short: TCP transmitted bytes
         long: Randomly generated tcp transmitted bytes
-        unit: bytes
+        unit: By
         counter:
             value_type: "int"
         attributes:

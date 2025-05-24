@@ -10,6 +10,7 @@ import (
 	"github.com/alexandreLamarre/metricsgen/pkg/templates"
 	"github.com/alexandreLamarre/metricsgen/pkg/util"
 	"github.com/samber/lo"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 )
 
 var (
@@ -198,10 +199,11 @@ func (a Attribute) ToTemplateDefinition() templates.AttributeDef {
 
 func (a Attribute) ToDocsTemplateDefinition(required bool) templates.DocAttribute {
 	return templates.DocAttribute{
-		Name:        a.Name,
-		Description: a.Description,
-		ValueType:   a.Type,
-		Required:    required,
+		Name:            a.Name,
+		PrometheusLabel: util.GetPrometheusLabel(a.Name),
+		Description:     a.Description,
+		ValueType:       a.Type,
+		Required:        required,
 	}
 }
 
@@ -348,9 +350,14 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 		}
 		return 0
 	})
-
+	g := util.NewPrometheusNameGenerator()
 	return templates.DocMetric{
-		Name:       m.Name,
+		Name: m.Name,
+		PrometheusName: g.GetPrometheusName(metricdata.Metrics{
+			Name:        m.Name,
+			Description: m.Short,
+			Unit:        m.Unit,
+		}, m.MetricTypeCounter != nil),
 		Link:       MarkdownLinkAnchor(m.Name),
 		Short:      m.Short,
 		Long:       m.Long,
