@@ -51,9 +51,9 @@ func recordDummyMetrics(ctx context.Context, m metrics.Metrics) {
 				randVal := rand.Int()
 				var recordEnum metrics.EnumRandomInt
 				if randVal%2 == 0 {
-					recordEnum = metrics.EnumOn
+					recordEnum = metrics.EnumRandomIntOn
 				} else {
-					recordEnum = metrics.EnumOff
+					recordEnum = metrics.EnumRandomIntOff
 				}
 				m.MetricDummyTcpConnlat.Record(
 					ctx,
@@ -69,7 +69,7 @@ func recordDummyMetrics(ctx context.Context, m metrics.Metrics) {
 					rand.Int63(),
 					rand.Int(),
 					recordEnum,
-					metrics.WithDummyTcpRxCpuMode(metrics.EnumActive),
+					metrics.WithDummyTcpRxCpuMode(metrics.EnumCpuModeActive),
 				)
 
 				m.MetricDummyTcpTx.Record(
@@ -78,7 +78,7 @@ func recordDummyMetrics(ctx context.Context, m metrics.Metrics) {
 					rand.Int(),
 					rand.Int(),
 					x,
-					metrics.EnumActive,
+					metrics.EnumCpuModeActive,
 				)
 			}
 		}

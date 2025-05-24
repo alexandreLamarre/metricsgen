@@ -24,6 +24,8 @@ Some extra details about what the Example Counter represents and how it is colle
 |------| ---------------- |-------------|------| ------- |
 | example.bool | example_bool | Example boolean value | bool | ✅ |
 | example.boolSlice | example_boolSlice | Example bool slice value | []bool | ✅ |
+| example.enum | example_enum | Example enum | string | ✅ |
+| example.enum2 | example_enum2 | Example enum 2 | string | ✅ |
 | example.float | example_float | Example float value | float64 | ✅ |
 | example.floatSlice | example_floatSlice | Example float slice value | []float64 | ✅ |
 | example.int | example_int | Example int value | int | ✅ |

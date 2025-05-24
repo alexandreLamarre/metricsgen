@@ -14,8 +14,8 @@ func (e EnumCpuMode) Val() string {
 }
 
 const (
-	EnumIdle   EnumCpuMode = "idle"
-	EnumActive EnumCpuMode = "active"
+	EnumCpuModeIdle   EnumCpuMode = "idle"
+	EnumCpuModeActive EnumCpuMode = "active"
 )
 
 type EnumRandomInt int
@@ -25,8 +25,8 @@ func (e EnumRandomInt) Val() int {
 }
 
 const (
-	EnumOn  EnumRandomInt = 0
-	EnumOff EnumRandomInt = 1
+	EnumRandomIntOn  EnumRandomInt = 0
+	EnumRandomIntOff EnumRandomInt = 1
 )
 
 type Metrics struct {

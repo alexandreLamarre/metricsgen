@@ -20,7 +20,7 @@ func (e {{ $enum.EnumType }}) Val() {{ $enum.ValueType }} {
 
 const (
   {{- range $valueDef := .Values }}
-  Enum{{ $valueDef.ValueCase }} {{$enum.EnumType}}  = {{ $valueDef.Value }}
+  {{$enum.EnumType}}{{ $valueDef.ValueCase }} {{$enum.EnumType}}  = {{ $valueDef.Value }}
   {{- end }}
 )
 {{- end }}

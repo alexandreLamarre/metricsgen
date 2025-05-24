@@ -7,6 +7,28 @@ import (
 	otelmetricsdk "go.opentelemetry.io/otel/metric"
 )
 
+type EnumExampleEnum string
+
+func (e EnumExampleEnum) Val() string {
+	return string(e)
+}
+
+const (
+	EnumExampleEnumOn  EnumExampleEnum = "on"
+	EnumExampleEnumOff EnumExampleEnum = "off"
+)
+
+type EnumExampleEnum2 string
+
+func (e EnumExampleEnum2) Val() string {
+	return string(e)
+}
+
+const (
+	EnumExampleEnum2On  EnumExampleEnum2 = "on"
+	EnumExampleEnum2Off EnumExampleEnum2 = "off"
+)
+
 type Metrics struct {
 	*MetricExampleCounter
 	*MetricExampleCounterOptional
@@ -85,6 +107,8 @@ func (m *MetricExampleCounter) init(meter otelmetricsdk.Meter) error {
 // - exampleIntSlice : Example int slice value
 // - exampleInt64Slice : Example int64 slice value
 // - exampleStringSlice : Example int slice value
+// - exampleEnum : Example enum
+// - exampleEnum2 : Example enum 2
 func (m *MetricExampleCounter) Record(
 	ctx context.Context,
 	value int64,
@@ -98,6 +122,8 @@ func (m *MetricExampleCounter) Record(
 	exampleIntSlice []int,
 	exampleInt64Slice []int64,
 	exampleStringSlice []string,
+	exampleEnum EnumExampleEnum,
+	exampleEnum2 EnumExampleEnum2,
 	attributeOpts ...AttributeExampleCounterOption,
 ) {
 	options := &AttributeExampleCounterOptions{}
@@ -114,6 +140,8 @@ func (m *MetricExampleCounter) Record(
 		otelattribute.IntSlice("example.intSlice", exampleIntSlice),
 		otelattribute.Int64Slice("example.int64Slice", exampleInt64Slice),
 		otelattribute.StringSlice("example.stringSlice", exampleStringSlice),
+		otelattribute.String("example.enum", exampleEnum.Val()),
+		otelattribute.String("example.enum2", exampleEnum2.Val()),
 	}
 
 	attrs := otelattribute.NewSet(

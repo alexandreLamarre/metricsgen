@@ -29,6 +29,14 @@ attributes:
   example.stringSlice:
     description : Example int slice value
     type : "[]string"
+  example.enum:
+    description : Example enum
+    type : string
+    enum : [on, off]
+  example.enum2:
+    description : Example enum 2
+    type : string
+    enum : [on, off]
 
 
 metrics:
@@ -49,7 +57,8 @@ metrics:
       - example.intSlice
       - example.int64Slice
       - example.stringSlice
-
+      - example.enum
+      - example.enum2
   example.counter.optional:
     short: Example Counter
     long: Some extra details about what the Example Counter represents and how it is collected.
