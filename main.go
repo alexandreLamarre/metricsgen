@@ -111,7 +111,7 @@ func BuildGenerateCmd() *cobra.Command {
 				return err
 			}
 
-			if err := os.WriteFile("metrics_generated.go", metricsgen, 0644); err != nil {
+			if err := os.WriteFile("metrics_otel_generated.go", metricsgen, 0644); err != nil {
 				return err
 			}
 
