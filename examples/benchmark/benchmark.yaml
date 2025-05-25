@@ -1,0 +1,73 @@
+attributes:
+  stringLabel :
+    type : string
+    description : "A string label"
+  stringLabel2 :
+    type : string
+    description : "A string label"
+  stringLabel3 :
+    type : string
+    description : "A string label"
+  stringLabel4 :
+    type : string
+    description : "A string label"
+  stringLabel5 :
+    type : string
+    description : "A string label"
+  stringLabel6 :
+    type : string
+    description : "A string label"
+  stringLabel7 :
+    type : string
+    description : "A string label"
+  stringLabel8 :
+    type : string
+    description : "A string label"
+
+metrics:
+  no.label.counter:
+    counter:
+      value_type: int64
+    short: counter with no labels
+  one.label.counter:
+    counter:
+      value_type: int64
+    short: counter with 1 label
+    attributes:
+      - stringLabel
+  four.label.counter:
+    counter:
+      value_type: int64
+    short: counter with 4 labels
+    attributes:
+      - stringLabel
+      - stringLabel2
+      - stringLabel3
+      - stringLabel4
+  eight.label.counter:
+    counter:
+      value_type: int64
+    short: counter with 8 labels
+    attributes:
+      - stringLabel
+      - stringLabel2
+      - stringLabel3
+      - stringLabel4
+      - stringLabel5
+      - stringLabel6
+      - stringLabel7
+      - stringLabel8
+  split.label.counter:
+    counter:
+      value_type: int64
+    short: counter with 4 labels and 4 optional labels
+    attributes:
+      - stringLabel
+      - stringLabel2
+      - stringLabel3
+      - stringLabel4
+    optional_attributes: 
+      - stringLabel5
+      - stringLabel6
+      - stringLabel7
+      - stringLabel8
