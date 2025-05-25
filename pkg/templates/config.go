@@ -5,14 +5,14 @@ import (
 	"text/template"
 )
 
-//go:embed templates/metrics.go.tmpl
-var metricsGenRawTemplate string
+//go:embed templates/metrics.otel.go.tmpl
+var metricsGenOtelRawTemplate string
 
 //go:embed templates/docs.md.tmpl
 var docsGenRawTemplate string
 
-var metricsGenTemplate = template.Must(template.New("metricsgen").Parse(
-	metricsGenRawTemplate,
+var metricsGenOtelTemplate = template.Must(template.New("metricsgen").Parse(
+	metricsGenOtelRawTemplate,
 ))
 
 var docsGenTemplate = template.Must(template.New("docsgen").Parse(
