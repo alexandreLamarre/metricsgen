@@ -8,11 +8,18 @@ import (
 //go:embed templates/metrics.otel.go.tmpl
 var metricsGenOtelRawTemplate string
 
+//go:embed templates/metrics.prometheus.go.tmpl
+var metricsGenPrometheusRawTemplate string
+
 //go:embed templates/docs.md.tmpl
 var docsGenRawTemplate string
 
 var metricsGenOtelTemplate = template.Must(template.New("metricsgen").Parse(
 	metricsGenOtelRawTemplate,
+))
+
+var metricsGenPrometheusTemplate = template.Must(template.New("metricsgenprom").Parse(
+	metricsGenPrometheusRawTemplate,
 ))
 
 var docsGenTemplate = template.Must(template.New("docsgen").Parse(
