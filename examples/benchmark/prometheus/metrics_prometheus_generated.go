@@ -35,17 +35,28 @@ func toString(values ...any) []string {
 		}
 		ft, ok := v.(float64)
 		if ok {
-			ret[i] = fmt.Sprintf("%f", ft)
+			ret[i] = fmt.Sprintf("%g", ft)
 			continue
 		}
 
 		sSlice, ok := v.([]string)
 		if ok {
-			ret[i] = fmt.Sprintf(`[%s]`, strings.Join(sSlice, ","))
+			sb := strings.Builder{}
+			sb.WriteString("[")
+			for i, val := range sSlice {
+				if i != 0 {
+					sb.WriteString(",")
+				}
+				sb.WriteString("\"")
+				sb.WriteString(val)
+				sb.WriteString("\"")
+			}
+			sb.WriteString("]")
+			ret[i] = sb.String()
 			continue
 		}
 
-		iSlice, ok := v.([]int64)
+		iSlice, ok := v.([]int)
 		if ok {
 			sb := strings.Builder{}
 			sb.WriteString("[")
@@ -84,7 +95,7 @@ func toString(values ...any) []string {
 				if i != 0 {
 					sb.WriteString(",")
 				}
-				sb.WriteString(fmt.Sprintf("%f", val))
+				sb.WriteString(fmt.Sprintf("%g", val))
 			}
 			sb.WriteString("]")
 			ret[i] = sb.String()
@@ -97,7 +108,7 @@ func toString(values ...any) []string {
 			sb.WriteString("[")
 			for i, val := range bSlice {
 				if i != 0 {
-					sb.WriteString(",")
+					sb.WriteString(" ")
 				}
 				sb.WriteString(fmt.Sprintf("%t", val))
 			}
