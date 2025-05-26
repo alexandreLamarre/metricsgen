@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/alexandreLamarre/metricsgen/examples/benchmark"
+	benchmark "github.com/alexandreLamarre/metricsgen/examples/benchmark/otel"
 	promsdk "github.com/prometheus/client_golang/prometheus"
 	expprom "go.opentelemetry.io/otel/exporters/prometheus"
 	"go.opentelemetry.io/otel/metric"

@@ -1,6 +1,7 @@
 package util
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 )
@@ -90,4 +91,14 @@ func HasDuplicateStrings(slice []string) bool {
 		seen[s] = struct{}{}
 	}
 	return false
+}
+
+func MarkdownLinkAnchor(header string) string {
+	anchor := strings.ToLower(header)
+	// Remove all non-alphanumeric characters except hyphens and spaces
+	re := regexp.MustCompile(`[^a-z0-9 -]`)
+	anchor = re.ReplaceAllString(anchor, "")
+	// Replace spaces with hyphens
+	anchor = strings.ReplaceAll(anchor, " ", "-")
+	return anchor
 }

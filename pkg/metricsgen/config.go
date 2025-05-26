@@ -40,10 +40,15 @@ type Config struct {
 	Metrics    map[string]*Metric    `yaml:"metrics"`
 	logger     *slog.Logger
 	source     string
+	driver     string
 }
 
 func (c *Config) SetSource(s string) {
 	c.source = s
+}
+
+func (c *Config) SetDriver(driver string) {
+	c.driver = driver
 }
 
 func (c *Config) Merge(cfgs ...*Config) error {
@@ -185,9 +190,13 @@ func (a Attribute) Validate(l *slog.Logger) error {
 	return nil
 }
 
-func (a Attribute) ToTemplateDefinition() templates.AttributeDef {
+func (a Attribute) ToTemplateDefinition(driver string) templates.AttributeDef {
+	name := a.Name
+	if driver == "prometheus" {
+		name = util.GetPrometheusLabel(name)
+	}
 	return templates.AttributeDef{
-		Name:        a.Name,
+		Name:        name,
 		Field:       util.OtelStringToCamelCaseField(a.Name),
 		CamelCase:   util.OtelStringToCamelCase(a.Name),
 		Constructor: util.ValueTypeToAttributeConstructor(a.Type),
@@ -305,26 +314,34 @@ func (m Metric) Validate(l *slog.Logger, attrTable map[string]*Attribute) error 
 	return nil
 }
 
-func (m Metric) ToTemplateDefinition(attrTable map[string]*Attribute) templates.MetricConfig {
+func (m Metric) ToTemplateDefinition(driver string, attrTable map[string]*Attribute) templates.MetricConfig {
 	requiredAttrs := AttributesForMetric(m.Attributes, attrTable)
 	optionalAttrs := AttributesForMetric(m.OptionAttributes, attrTable)
 	buckets := []float64{}
 	if m.MetricTypeHist != nil {
 		buckets = m.Buckets
 	}
+	name := m.Name
+	if driver == "prometheus" {
+		g := util.NewPrometheusNameGenerator()
+		name = g.GetPrometheusName(metricdata.Metrics{
+			Name: name,
+			Unit: m.Unit,
+		}, m.MetricTypeCounter != nil)
+	}
 
 	return templates.MetricConfig{
-		Name:        m.Name,
+		Name:        name,
 		Description: m.Short,
 		Units:       m.Unit,
 		ValueType:   otelValueType(m.getValueType()),
 		Value:       goValueType(m.getValueType()),
 		MetricType:  m.metricValueType(),
 		RequiredAttributes: lo.Map(requiredAttrs, func(a Attribute, _ int) templates.AttributeDef {
-			return a.ToTemplateDefinition()
+			return a.ToTemplateDefinition(driver)
 		}),
 		OptionalAttributes: lo.Map(optionalAttrs, func(a Attribute, _ int) templates.AttributeDef {
-			return a.ToTemplateDefinition()
+			return a.ToTemplateDefinition(driver)
 		}),
 		Buckets: buckets,
 	}
@@ -358,7 +375,7 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 			Description: m.Short,
 			Unit:        m.Unit,
 		}, m.MetricTypeCounter != nil),
-		Link:       MarkdownLinkAnchor(m.Name),
+		Link:       util.MarkdownLinkAnchor(m.Name),
 		Short:      m.Short,
 		Long:       m.Long,
 		Unit:       m.Unit,
@@ -372,7 +389,7 @@ func (c *Config) ToMetricsTemplateDefinition() map[string]templates.MetricConfig
 	ret := map[string]templates.MetricConfig{}
 	for _, m := range c.Metrics {
 		structName := util.OtelStringToCamelCase(m.Name)
-		ret[structName] = m.ToTemplateDefinition(c.Attributes)
+		ret[structName] = m.ToTemplateDefinition(c.driver, c.Attributes)
 	}
 	return ret
 }

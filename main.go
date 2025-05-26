@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"go/format"
 	"log/slog"
 	"os"
+	"slices"
 
 	_ "github.com/alexandreLamarre/metricsgen/pkg/logger"
 
@@ -14,14 +16,21 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var validDrivers = []string{"otel", "prometheus"}
+
 func BuildGenerateCmd() *cobra.Command {
 	var extraFiles []string
+	var driver string
 	cmd := &cobra.Command{
 		Args:    cobra.ExactArgs(1),
 		Use:     "metricsgen <filename>",
 		Version: version.FriendlyVersion(),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			logger := slog.Default()
+			logger := slog.Default().With("driver", driver)
+			if !slices.Contains(validDrivers, driver) {
+				logger.Error("invalid driver")
+				return fmt.Errorf("invalid driver")
+			}
 			genFile := args[0]
 			var curPkg string
 			curPkg = os.Getenv("GOPACKAGE")
@@ -42,6 +51,7 @@ func BuildGenerateCmd() *cobra.Command {
 			}
 			cfg.SetSource(genFile)
 			cfg.SetLogger(logger)
+			cfg.SetDriver(driver)
 			if err := cfg.Sanitize(); err != nil {
 				logger.With("stage", "sanitization").Error(err.Error())
 				return err
@@ -82,36 +92,70 @@ func BuildGenerateCmd() *cobra.Command {
 				return err
 			}
 
-			metricsgen, err := templates.ExecuteMetrics(templates.GenConfig{
-				PackageName: curPkg,
-				ImportDefs: []templates.ImportDef{
-					{
-						Dependency: "context",
+			var metricsGenRet []byte
+			if driver == "otel" {
+				metricsGen, err := templates.ExecuteOtelMetrics(templates.GenConfig{
+					PackageName: curPkg,
+					ImportDefs: []templates.ImportDef{
+						{
+							Dependency: "context",
+						},
+						{
+							Alias:      "otelmetricsdk",
+							Dependency: "go.opentelemetry.io/otel/metric",
+						},
+						{
+							Alias:      "otelattribute",
+							Dependency: "go.opentelemetry.io/otel/attribute",
+						},
 					},
-					{
-						Alias:      "otelmetricsdk",
-						Dependency: "go.opentelemetry.io/otel/metric",
-					},
-					{
-						Alias:      "otelattribute",
-						Dependency: "go.opentelemetry.io/otel/attribute",
-					},
-				},
-				Metrics:   cfg.ToMetricsTemplateDefinition(),
-				EnumTypes: cfg.ToEnumTemplateDefinition(),
-			})
-			if err != nil {
-				logger.With("stage", "codegen").Error(err.Error())
-				return err
+					Metrics:   cfg.ToMetricsTemplateDefinition(),
+					EnumTypes: cfg.ToEnumTemplateDefinition(),
+				})
+				if err != nil {
+					logger.With("stage", "codegen").Error(err.Error())
+					return err
+				}
+				metricsGenRet = metricsGen
 			}
 
-			metricsgen, err = format.Source(metricsgen)
+			if driver == "prometheus" {
+				metricsGen, err := templates.ExecutePrometheusMetrics(
+					templates.GenConfig{
+						PackageName: curPkg,
+						Metrics:     cfg.ToMetricsTemplateDefinition(),
+						EnumTypes:   cfg.ToEnumTemplateDefinition(),
+						ImportDefs: []templates.ImportDef{
+							{
+								Dependency: "fmt",
+							},
+							{
+								Dependency: "strings",
+							},
+							{
+								Alias:      "promsdk",
+								Dependency: "github.com/prometheus/client_golang/prometheus",
+							},
+						},
+					},
+				)
+				if err != nil {
+					logger.With("stage", "codegen").Error(err.Error())
+					return err
+				}
+				metricsGenRet = metricsGen
+			}
+			metricsGenRet, err = format.Source(metricsGenRet)
 			if err != nil {
 				logger.With("stage", "formatting").Error(err.Error())
 				return err
 			}
 
-			if err := os.WriteFile("metrics_otel_generated.go", metricsgen, 0644); err != nil {
+			if err := os.WriteFile(
+				fmt.Sprintf("metrics_%s_generated.go", driver),
+				metricsGenRet,
+				0644,
+			); err != nil {
 				return err
 			}
 
@@ -129,6 +173,7 @@ func BuildGenerateCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringArrayVarP(&extraFiles, "extra-files", "f", []string{}, "extra metricsgen files to aggregate during generation")
+	cmd.Flags().StringVarP(&driver, "driver", "d", "otel", "specifies which sdks to use in code generation. Available: `otel`, `prometheus`")
 	validateCmd := &cobra.Command{
 		Use:   "validate",
 		Short: "Validate the metricsgen file",
