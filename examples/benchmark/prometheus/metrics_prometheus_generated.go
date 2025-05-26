@@ -41,19 +41,21 @@ func toString(values ...any) []string {
 
 		sSlice, ok := v.([]string)
 		if ok {
-			ret[i] = strings.Join(sSlice, ";")
+			ret[i] = fmt.Sprintf(`[%s]`, strings.Join(sSlice, ","))
 			continue
 		}
 
 		iSlice, ok := v.([]int64)
 		if ok {
 			sb := strings.Builder{}
+			sb.WriteString("[")
 			for i, val := range iSlice {
 				if i != 0 {
-					sb.WriteString(";")
+					sb.WriteString(",")
 				}
 				sb.WriteString(fmt.Sprintf("%d", val))
 			}
+			sb.WriteString("]")
 			ret[i] = sb.String()
 			continue
 		}
@@ -61,12 +63,15 @@ func toString(values ...any) []string {
 		i64Slice, ok := v.([]int64)
 		if ok {
 			sb := strings.Builder{}
+			sb.WriteString("[")
 			for i, val := range i64Slice {
 				if i != 0 {
-					sb.WriteString(";")
+					sb.WriteString(",")
 				}
 				sb.WriteString(fmt.Sprintf("%d", val))
 			}
+			sb.WriteString("]")
+
 			ret[i] = sb.String()
 			continue
 		}
@@ -74,12 +79,14 @@ func toString(values ...any) []string {
 		fSlice, ok := v.([]float64)
 		if ok {
 			sb := strings.Builder{}
+			sb.WriteString("[")
 			for i, val := range fSlice {
 				if i != 0 {
-					sb.WriteString(";")
+					sb.WriteString(",")
 				}
 				sb.WriteString(fmt.Sprintf("%f", val))
 			}
+			sb.WriteString("]")
 			ret[i] = sb.String()
 			continue
 		}
@@ -87,12 +94,14 @@ func toString(values ...any) []string {
 		bSlice, ok := v.([]bool)
 		if ok {
 			sb := strings.Builder{}
+			sb.WriteString("[")
 			for i, val := range bSlice {
 				if i != 0 {
-					sb.WriteString(";")
+					sb.WriteString(",")
 				}
 				sb.WriteString(fmt.Sprintf("%t", val))
 			}
+			sb.WriteString("]")
 			ret[i] = sb.String()
 			continue
 		}
