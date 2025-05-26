@@ -229,7 +229,7 @@ func (m *MetricExampleCounter) Add(
 	options.Apply(attributeOpts...)
 	m.Data.WithLabelValues(
 		append(toString(
-			exampleString, exampleInt, exampleFloat, exampleBool, exampleInt64, exampleFloatSlice, exampleBoolSlice, exampleIntSlice, exampleInt64Slice, exampleStringSlice, exampleEnum, exampleEnum2,
+			exampleString, exampleInt, exampleFloat, exampleBool, exampleInt64, exampleFloatSlice, exampleBoolSlice, exampleIntSlice, exampleInt64Slice, exampleStringSlice, exampleEnum.Val(), exampleEnum2.Val(),
 		), options.Labels()...)...,
 	).Add(float64(value))
 }

@@ -196,7 +196,7 @@ func (m *Metric{{ $metricStructName }}){{$metricFuncName}}(
     options.Apply(attributeOpts...)
     m.Data.WithLabelValues(
       append(toString(
-        {{ range $def.RequiredAttributes }} {{ .Field }}, {{ end }}
+        {{ range $def.RequiredAttributes }} {{if .Enum}} {{.Field}}.Val() {{else}} {{ .Field }} {{end}}, {{ end }}
       ), options.Labels()...)...,
     ).{{$metricFuncName}}(float64(value))
 }
