@@ -108,6 +108,10 @@ func BuildGenerateCmd() *cobra.Command {
 							Alias:      "otelattribute",
 							Dependency: "go.opentelemetry.io/otel/attribute",
 						},
+						{
+							Alias:      "prommodel",
+							Dependency: "github.com/prometheus/common/model",
+						},
 					},
 					Metrics:   cfg.ToMetricsTemplateDefinition(),
 					EnumTypes: cfg.ToEnumTemplateDefinition(),

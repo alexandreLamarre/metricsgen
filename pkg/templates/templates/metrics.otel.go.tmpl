@@ -11,6 +11,11 @@ import (
   {{- end }}
 )
 
+//FIXME:hack for conformance tests, consistent metric exposing with prometheus driver
+func init () {
+  prommodel.NameValidationScheme = prommodel.LegacyValidation
+}
+
 {{- range $enum := .EnumTypes }}
 {{ if not (eq $enum.Description "")}}// {{$enum.EnumType}} {{ $enum.Description }}{{- end }}
 type {{ $enum.EnumType }} {{ $enum.ValueType }}

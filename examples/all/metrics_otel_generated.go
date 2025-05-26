@@ -3,9 +3,15 @@ package all
 
 import (
 	"context"
+	prommodel "github.com/prometheus/common/model"
 	otelattribute "go.opentelemetry.io/otel/attribute"
 	otelmetricsdk "go.opentelemetry.io/otel/metric"
 )
+
+// FIXME:hack for conformance tests, consistent metric exposing with prometheus driver
+func init() {
+	prommodel.NameValidationScheme = prommodel.LegacyValidation
+}
 
 // EnumExampleEnum Example enum
 type EnumExampleEnum string
