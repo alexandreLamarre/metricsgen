@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/prometheus/common/model"
-	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 )
 
 var unitSuffixes = map[string]string{
@@ -97,8 +96,7 @@ func WithPrometheusNameWithoutUnits(withoutUnits bool) PrometheusNameOption {
 	}
 }
 
-func (g *PrometheusNameGenerator) GetPrometheusName(m metricdata.Metrics, isCounter bool) string {
-	name := m.Name
+func (g *PrometheusNameGenerator) GetPrometheusName(name, unit string, isCounter bool) string {
 	name = model.EscapeName(name, model.NameEscapingScheme)
 	addCounterSuffix := !g.withoutCounterSuffixes && isCounter
 	if addCounterSuffix {
@@ -114,7 +112,7 @@ func (g *PrometheusNameGenerator) GetPrometheusName(m metricdata.Metrics, isCoun
 	if g.namespace != "" {
 		name = g.namespace + name
 	}
-	if suffix, ok := unitSuffixes[m.Unit]; ok && !g.withoutUnits && !strings.HasSuffix(name, suffix) {
+	if suffix, ok := unitSuffixes[unit]; ok && !g.withoutUnits && !strings.HasSuffix(name, suffix) {
 		name += "_" + suffix
 	}
 	if addCounterSuffix {
