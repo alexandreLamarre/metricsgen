@@ -117,7 +117,6 @@ metrics:
     unit: ms
     histogram:
         value_type: "float"
-        buckets: [1,2,3,4]
     attributes:
       - example.string
       - example.int
@@ -146,13 +145,13 @@ metrics:
       - example.intSlice
       - example.int64Slice
       - example.stringSlice
-  example.exponential_histogram:
+  example.histogram.customized:
     short: Example Exponential Histogram
     long: ""
     unit: ms
     histogram:
         value_type: "float"
-        aggregation: ""
+        buckets : [1,2,3,4]
     attributes:
       - example.string
       - example.int

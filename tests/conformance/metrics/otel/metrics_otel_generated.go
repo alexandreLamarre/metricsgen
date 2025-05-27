@@ -40,38 +40,35 @@ const (
 type Metrics struct {
 	*MetricExampleCounter
 	*MetricExampleCounterOptional
-	*MetricExampleExponentialHistogram
 	*MetricExampleGauge
 	*MetricExampleGaugeOptional
 	*MetricExampleHistogram
+	*MetricExampleHistogramCustomized
 	*MetricExampleHistogramOptional
 }
 
 // NewMetrics initializes the set of following metrics
 // - ExampleCounter  : Example Counter
 // - ExampleCounterOptional  : Example Counter
-// - ExampleExponentialHistogram  : Example Exponential Histogram
 // - ExampleGauge  : Example Gauge
 // - ExampleGaugeOptional  : Example Gauge
 // - ExampleHistogram  : Example Histogram
+// - ExampleHistogramCustomized  : Example Exponential Histogram
 // - ExampleHistogramOptional  : Example Histogram
 func NewMetrics(meter otelmetricsdk.Meter) (Metrics, error) {
 	m := Metrics{
-		MetricExampleCounter:              &MetricExampleCounter{},
-		MetricExampleCounterOptional:      &MetricExampleCounterOptional{},
-		MetricExampleExponentialHistogram: &MetricExampleExponentialHistogram{},
-		MetricExampleGauge:                &MetricExampleGauge{},
-		MetricExampleGaugeOptional:        &MetricExampleGaugeOptional{},
-		MetricExampleHistogram:            &MetricExampleHistogram{},
-		MetricExampleHistogramOptional:    &MetricExampleHistogramOptional{},
+		MetricExampleCounter:             &MetricExampleCounter{},
+		MetricExampleCounterOptional:     &MetricExampleCounterOptional{},
+		MetricExampleGauge:               &MetricExampleGauge{},
+		MetricExampleGaugeOptional:       &MetricExampleGaugeOptional{},
+		MetricExampleHistogram:           &MetricExampleHistogram{},
+		MetricExampleHistogramCustomized: &MetricExampleHistogramCustomized{},
+		MetricExampleHistogramOptional:   &MetricExampleHistogramOptional{},
 	}
 	if err := m.MetricExampleCounter.init(meter); err != nil {
 		return m, err
 	}
 	if err := m.MetricExampleCounterOptional.init(meter); err != nil {
-		return m, err
-	}
-	if err := m.MetricExampleExponentialHistogram.init(meter); err != nil {
 		return m, err
 	}
 	if err := m.MetricExampleGauge.init(meter); err != nil {
@@ -81,6 +78,9 @@ func NewMetrics(meter otelmetricsdk.Meter) (Metrics, error) {
 		return m, err
 	}
 	if err := m.MetricExampleHistogram.init(meter); err != nil {
+		return m, err
+	}
+	if err := m.MetricExampleHistogramCustomized.init(meter); err != nil {
 		return m, err
 	}
 	if err := m.MetricExampleHistogramOptional.init(meter); err != nil {
@@ -354,86 +354,6 @@ func WithExampleCounterOptionalExampleStringSlice(exampleStringSlice []string) A
 	}
 }
 
-// MetricExampleExponentialHistogram Example Exponential Histogram
-type MetricExampleExponentialHistogram struct {
-	data otelmetricsdk.Float64Histogram
-}
-
-func (m *MetricExampleExponentialHistogram) init(meter otelmetricsdk.Meter) error {
-	var err error
-	m.data, err = meter.Float64Histogram(
-		"example.exponential_histogram",
-		otelmetricsdk.WithDescription("Example Exponential Histogram"),
-		otelmetricsdk.WithUnit("ms"),
-	)
-	return err
-}
-
-// Record records a data point for the specified metric
-//
-// • exampleString : Example string value
-// • exampleInt : Example int value
-// • exampleFloat : Example float value
-// • exampleBool : Example boolean value
-// • exampleInt64 : Example int64 value
-// • exampleFloatSlice : Example float slice value
-// • exampleBoolSlice : Example bool slice value
-// • exampleIntSlice : Example int slice value
-// • exampleInt64Slice : Example int64 slice value
-// • exampleStringSlice : Example int slice value
-func (m *MetricExampleExponentialHistogram) Record(
-	ctx context.Context,
-	value float64,
-	exampleString string,
-	exampleInt int,
-	exampleFloat float64,
-	exampleBool bool,
-	exampleInt64 int64,
-	exampleFloatSlice []float64,
-	exampleBoolSlice []bool,
-	exampleIntSlice []int,
-	exampleInt64Slice []int64,
-	exampleStringSlice []string,
-	attributeOpts ...AttributeExampleExponentialHistogramOption,
-) {
-	options := &AttributeExampleExponentialHistogramOptions{}
-	options.Apply(attributeOpts...)
-	optionalAttr := options.Attributes()
-	requiredAttrs := []otelattribute.KeyValue{
-		otelattribute.String("example.string", exampleString),
-		otelattribute.Int("example.int", exampleInt),
-		otelattribute.Float64("example.float", exampleFloat),
-		otelattribute.Bool("example.bool", exampleBool),
-		otelattribute.Int64("example.int64", exampleInt64),
-		otelattribute.Float64Slice("example.floatSlice", exampleFloatSlice),
-		otelattribute.BoolSlice("example.boolSlice", exampleBoolSlice),
-		otelattribute.IntSlice("example.intSlice", exampleIntSlice),
-		otelattribute.Int64Slice("example.int64Slice", exampleInt64Slice),
-		otelattribute.StringSlice("example.stringSlice", exampleStringSlice),
-	}
-
-	attrs := otelattribute.NewSet(
-		append(requiredAttrs, optionalAttr...)...,
-	)
-	m.data.Record(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
-}
-
-type AttributeExampleExponentialHistogramOptions struct {
-}
-
-type AttributeExampleExponentialHistogramOption func(*AttributeExampleExponentialHistogramOptions)
-
-func (o *AttributeExampleExponentialHistogramOptions) Apply(opts ...AttributeExampleExponentialHistogramOption) {
-	for _, opt := range opts {
-		opt(o)
-	}
-}
-
-func (o *AttributeExampleExponentialHistogramOptions) Attributes() []otelattribute.KeyValue {
-	ret := []otelattribute.KeyValue{}
-	return ret
-}
-
 // MetricExampleGauge Example Gauge
 type MetricExampleGauge struct {
 	data otelmetricsdk.Float64Gauge
@@ -605,7 +525,7 @@ func (m *MetricExampleHistogram) init(meter otelmetricsdk.Meter) error {
 		"example.histogram",
 		otelmetricsdk.WithDescription("Example Histogram"),
 		otelmetricsdk.WithUnit("ms"),
-		otelmetricsdk.WithExplicitBucketBoundaries(1, 2, 3, 4),
+		otelmetricsdk.WithExplicitBucketBoundaries(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10),
 	)
 	return err
 }
@@ -675,6 +595,87 @@ func (o *AttributeExampleHistogramOptions) Attributes() []otelattribute.KeyValue
 	return ret
 }
 
+// MetricExampleHistogramCustomized Example Exponential Histogram
+type MetricExampleHistogramCustomized struct {
+	data otelmetricsdk.Float64Histogram
+}
+
+func (m *MetricExampleHistogramCustomized) init(meter otelmetricsdk.Meter) error {
+	var err error
+	m.data, err = meter.Float64Histogram(
+		"example.histogram.customized",
+		otelmetricsdk.WithDescription("Example Exponential Histogram"),
+		otelmetricsdk.WithUnit("ms"),
+		otelmetricsdk.WithExplicitBucketBoundaries(1, 2, 3, 4),
+	)
+	return err
+}
+
+// Record records a data point for the specified metric
+//
+// • exampleString : Example string value
+// • exampleInt : Example int value
+// • exampleFloat : Example float value
+// • exampleBool : Example boolean value
+// • exampleInt64 : Example int64 value
+// • exampleFloatSlice : Example float slice value
+// • exampleBoolSlice : Example bool slice value
+// • exampleIntSlice : Example int slice value
+// • exampleInt64Slice : Example int64 slice value
+// • exampleStringSlice : Example int slice value
+func (m *MetricExampleHistogramCustomized) Record(
+	ctx context.Context,
+	value float64,
+	exampleString string,
+	exampleInt int,
+	exampleFloat float64,
+	exampleBool bool,
+	exampleInt64 int64,
+	exampleFloatSlice []float64,
+	exampleBoolSlice []bool,
+	exampleIntSlice []int,
+	exampleInt64Slice []int64,
+	exampleStringSlice []string,
+	attributeOpts ...AttributeExampleHistogramCustomizedOption,
+) {
+	options := &AttributeExampleHistogramCustomizedOptions{}
+	options.Apply(attributeOpts...)
+	optionalAttr := options.Attributes()
+	requiredAttrs := []otelattribute.KeyValue{
+		otelattribute.String("example.string", exampleString),
+		otelattribute.Int("example.int", exampleInt),
+		otelattribute.Float64("example.float", exampleFloat),
+		otelattribute.Bool("example.bool", exampleBool),
+		otelattribute.Int64("example.int64", exampleInt64),
+		otelattribute.Float64Slice("example.floatSlice", exampleFloatSlice),
+		otelattribute.BoolSlice("example.boolSlice", exampleBoolSlice),
+		otelattribute.IntSlice("example.intSlice", exampleIntSlice),
+		otelattribute.Int64Slice("example.int64Slice", exampleInt64Slice),
+		otelattribute.StringSlice("example.stringSlice", exampleStringSlice),
+	}
+
+	attrs := otelattribute.NewSet(
+		append(requiredAttrs, optionalAttr...)...,
+	)
+	m.data.Record(ctx, value, otelmetricsdk.WithAttributeSet(attrs))
+}
+
+type AttributeExampleHistogramCustomizedOptions struct {
+}
+
+type AttributeExampleHistogramCustomizedOption func(*AttributeExampleHistogramCustomizedOptions)
+
+func (o *AttributeExampleHistogramCustomizedOptions) Apply(opts ...AttributeExampleHistogramCustomizedOption) {
+	for _, opt := range opts {
+		opt(o)
+	}
+}
+
+func (o *AttributeExampleHistogramCustomizedOptions) Attributes() []otelattribute.KeyValue {
+	ret := []otelattribute.KeyValue{}
+	return ret
+}
+
 // MetricExampleHistogramOptional Example Histogram
 type MetricExampleHistogramOptional struct {
 	data otelmetricsdk.Float64Histogram
@@ -686,6 +687,7 @@ func (m *MetricExampleHistogramOptional) init(meter otelmetricsdk.Meter) error {
 		"example.histogram.optional",
 		otelmetricsdk.WithDescription("Example Histogram"),
 		otelmetricsdk.WithUnit("ms"),
+		otelmetricsdk.WithExplicitBucketBoundaries(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10),
 	)
 	return err
 }

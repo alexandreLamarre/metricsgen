@@ -148,38 +148,35 @@ const (
 type PrometheusMetrics struct {
 	*MetricExampleCounter
 	*MetricExampleCounterOptional
-	*MetricExampleExponentialHistogram
 	*MetricExampleGauge
 	*MetricExampleGaugeOptional
 	*MetricExampleHistogram
+	*MetricExampleHistogramCustomized
 	*MetricExampleHistogramOptional
 }
 
 // NewPrometheusMetrics initializes the set of following metrics
 // - ExampleCounter  : Example Counter
 // - ExampleCounterOptional  : Example Counter
-// - ExampleExponentialHistogram  : Example Exponential Histogram
 // - ExampleGauge  : Example Gauge
 // - ExampleGaugeOptional  : Example Gauge
 // - ExampleHistogram  : Example Histogram
+// - ExampleHistogramCustomized  : Example Exponential Histogram
 // - ExampleHistogramOptional  : Example Histogram
 func NewPrometheusMetrics(reg *promsdk.Registry) (PrometheusMetrics, error) {
 	m := PrometheusMetrics{
-		MetricExampleCounter:              &MetricExampleCounter{},
-		MetricExampleCounterOptional:      &MetricExampleCounterOptional{},
-		MetricExampleExponentialHistogram: &MetricExampleExponentialHistogram{},
-		MetricExampleGauge:                &MetricExampleGauge{},
-		MetricExampleGaugeOptional:        &MetricExampleGaugeOptional{},
-		MetricExampleHistogram:            &MetricExampleHistogram{},
-		MetricExampleHistogramOptional:    &MetricExampleHistogramOptional{},
+		MetricExampleCounter:             &MetricExampleCounter{},
+		MetricExampleCounterOptional:     &MetricExampleCounterOptional{},
+		MetricExampleGauge:               &MetricExampleGauge{},
+		MetricExampleGaugeOptional:       &MetricExampleGaugeOptional{},
+		MetricExampleHistogram:           &MetricExampleHistogram{},
+		MetricExampleHistogramCustomized: &MetricExampleHistogramCustomized{},
+		MetricExampleHistogramOptional:   &MetricExampleHistogramOptional{},
 	}
 	if err := m.MetricExampleCounter.init(reg); err != nil {
 		return m, err
 	}
 	if err := m.MetricExampleCounterOptional.init(reg); err != nil {
-		return m, err
-	}
-	if err := m.MetricExampleExponentialHistogram.init(reg); err != nil {
 		return m, err
 	}
 	if err := m.MetricExampleGauge.init(reg); err != nil {
@@ -189,6 +186,9 @@ func NewPrometheusMetrics(reg *promsdk.Registry) (PrometheusMetrics, error) {
 		return m, err
 	}
 	if err := m.MetricExampleHistogram.init(reg); err != nil {
+		return m, err
+	}
+	if err := m.MetricExampleHistogramCustomized.init(reg); err != nil {
 		return m, err
 	}
 	if err := m.MetricExampleHistogramOptional.init(reg); err != nil {
@@ -442,68 +442,6 @@ func WithExampleCounterOptionalExampleStringSlice(exampleStringSlice []string) A
 	}
 }
 
-// MetricExampleExponentialHistogram Example Exponential Histogram
-type MetricExampleExponentialHistogram struct {
-	Data *promsdk.HistogramVec
-}
-
-func (m *MetricExampleExponentialHistogram) init(reg *promsdk.Registry) error {
-	data := promsdk.NewHistogramVec(
-		promsdk.HistogramOpts{
-			Name: "example_exponential_histogram_milliseconds",
-			Help: "Example Exponential Histogram",
-		},
-		[]string{
-			// Required attributes
-			"example_string", "example_int", "example_float", "example_bool", "example_int64", "example_floatSlice", "example_boolSlice", "example_intSlice", "example_int64Slice", "example_stringSlice",
-		},
-	)
-	if err := reg.Register(data); err != nil {
-		return err
-	}
-	m.Data = data
-	return nil
-}
-
-func (m *MetricExampleExponentialHistogram) Observe(
-	value float64,
-	exampleString string,
-	exampleInt int,
-	exampleFloat float64,
-	exampleBool bool,
-	exampleInt64 int64,
-	exampleFloatSlice []float64,
-	exampleBoolSlice []bool,
-	exampleIntSlice []int,
-	exampleInt64Slice []int64,
-	exampleStringSlice []string,
-	attributeOpts ...AttributeExampleExponentialHistogramOption,
-) {
-	options := &AttributeExampleExponentialHistogramOptions{}
-	options.Apply(attributeOpts...)
-	m.Data.WithLabelValues(
-		append(toString(
-			exampleString, exampleInt, exampleFloat, exampleBool, exampleInt64, exampleFloatSlice, exampleBoolSlice, exampleIntSlice, exampleInt64Slice, exampleStringSlice,
-		), options.Labels()...)...,
-	).Observe(float64(value))
-}
-
-type AttributeExampleExponentialHistogramOptions struct {
-}
-
-type AttributeExampleExponentialHistogramOption func(*AttributeExampleExponentialHistogramOptions)
-
-func (o *AttributeExampleExponentialHistogramOptions) Apply(opts ...AttributeExampleExponentialHistogramOption) {
-	for _, opt := range opts {
-		opt(o)
-	}
-}
-
-func (o *AttributeExampleExponentialHistogramOptions) Labels() []string {
-	ret := []any{}
-	return toString(ret...)
-}
-
 // MetricExampleGauge Example Gauge
 type MetricExampleGauge struct {
 	Data *promsdk.GaugeVec
@@ -686,6 +624,71 @@ func (o *AttributeExampleHistogramOptions) Apply(opts ...AttributeExampleHistogr
 }
 
 func (o *AttributeExampleHistogramOptions) Labels() []string {
+	ret := []any{}
+	return toString(ret...)
+}
+
+// MetricExampleHistogramCustomized Example Exponential Histogram
+type MetricExampleHistogramCustomized struct {
+	Data *promsdk.HistogramVec
+}
+
+func (m *MetricExampleHistogramCustomized) init(reg *promsdk.Registry) error {
+	data := promsdk.NewHistogramVec(
+		promsdk.HistogramOpts{
+			Name: "example_histogram_customized_milliseconds",
+			Help: "Example Exponential Histogram",
+			Buckets: []float64{
+				1, 2, 3, 4,
+			},
+		},
+		[]string{
+			// Required attributes
+			"example_string", "example_int", "example_float", "example_bool", "example_int64", "example_floatSlice", "example_boolSlice", "example_intSlice", "example_int64Slice", "example_stringSlice",
+		},
+	)
+	if err := reg.Register(data); err != nil {
+		return err
+	}
+	m.Data = data
+	return nil
+}
+
+func (m *MetricExampleHistogramCustomized) Observe(
+	value float64,
+	exampleString string,
+	exampleInt int,
+	exampleFloat float64,
+	exampleBool bool,
+	exampleInt64 int64,
+	exampleFloatSlice []float64,
+	exampleBoolSlice []bool,
+	exampleIntSlice []int,
+	exampleInt64Slice []int64,
+	exampleStringSlice []string,
+	attributeOpts ...AttributeExampleHistogramCustomizedOption,
+) {
+	options := &AttributeExampleHistogramCustomizedOptions{}
+	options.Apply(attributeOpts...)
+	m.Data.WithLabelValues(
+		append(toString(
+			exampleString, exampleInt, exampleFloat, exampleBool, exampleInt64, exampleFloatSlice, exampleBoolSlice, exampleIntSlice, exampleInt64Slice, exampleStringSlice,
+		), options.Labels()...)...,
+	).Observe(float64(value))
+}
+
+type AttributeExampleHistogramCustomizedOptions struct {
+}
+
+type AttributeExampleHistogramCustomizedOption func(*AttributeExampleHistogramCustomizedOptions)
+
+func (o *AttributeExampleHistogramCustomizedOptions) Apply(opts ...AttributeExampleHistogramCustomizedOption) {
+	for _, opt := range opts {
+		opt(o)
+	}
+}
+
+func (o *AttributeExampleHistogramCustomizedOptions) Labels() []string {
 	ret := []any{}
 	return toString(ret...)
 }
