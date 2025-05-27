@@ -8,6 +8,7 @@ BENCH_TARGET?=otel
 build:
 	go build -o ./bin/metricsgen main.go
 generate: build
-	LOG_LEVEL=error go generate ./...
+	cd examples && LOG_LEVEL=error go generate ./...
+	cd tests && LOG_LEVEL=error go generate ./...
 benchmark: generate
-	go test -benchmem -benchtime=2s -bench=Benchmark $(PROFILE_FLAGS) -timeout=30s ./tests/benchmark/$(BENCH_TARGET)
+	cd tests && go test -benchmem -benchtime=2s -bench=Benchmark $(PROFILE_FLAGS) -timeout=30s ./benchmark/$(BENCH_TARGET)
