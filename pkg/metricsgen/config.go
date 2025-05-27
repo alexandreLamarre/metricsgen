@@ -10,7 +10,6 @@ import (
 	"github.com/alexandreLamarre/metricsgen/pkg/templates"
 	"github.com/alexandreLamarre/metricsgen/pkg/util"
 	"github.com/samber/lo"
-	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 )
 
 var (
@@ -331,10 +330,7 @@ func (m Metric) ToTemplateDefinition(driver string, attrTable map[string]*Attrib
 	name := m.Name
 	if driver == "prometheus" {
 		g := util.NewPrometheusNameGenerator()
-		name = g.GetPrometheusName(metricdata.Metrics{
-			Name: name,
-			Unit: m.Unit,
-		}, m.MetricTypeCounter != nil)
+		name = g.GetPrometheusName(m.Name, m.Unit, m.MetricTypeCounter != nil)
 	}
 
 	return templates.MetricConfig{
@@ -376,19 +372,15 @@ func (m Metric) ToDocsTemplateDefinition(attrTable map[string]*Attribute) templa
 	})
 	g := util.NewPrometheusNameGenerator()
 	return templates.DocMetric{
-		Name: m.Name,
-		PrometheusName: g.GetPrometheusName(metricdata.Metrics{
-			Name:        m.Name,
-			Description: m.Short,
-			Unit:        m.Unit,
-		}, m.MetricTypeCounter != nil),
-		Link:       util.MarkdownLinkAnchor(m.Name),
-		Short:      m.Short,
-		Long:       m.Long,
-		Unit:       m.Unit,
-		MetricType: m.metricValueType(),
-		ValueType:  m.getValueType(),
-		Attributes: ret,
+		Name:           m.Name,
+		PrometheusName: g.GetPrometheusName(m.Name, m.Unit, m.MetricTypeCounter != nil),
+		Link:           util.MarkdownLinkAnchor(m.Name),
+		Short:          m.Short,
+		Long:           m.Long,
+		Unit:           m.Unit,
+		MetricType:     m.metricValueType(),
+		ValueType:      m.getValueType(),
+		Attributes:     ret,
 	}
 }
 
