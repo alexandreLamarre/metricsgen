@@ -100,7 +100,7 @@ metrics:
     unit : unit
     gauge:
       value_type: "float"
-    optional_attributes:
+    attributes:
       - example.string
       - example.int
       - example.float
@@ -117,7 +117,6 @@ metrics:
     unit: ms
     histogram:
         value_type: "float"
-        buckets: [1,2,3,4]
     attributes:
       - example.string
       - example.int
@@ -135,7 +134,7 @@ metrics:
     unit: ms
     histogram:
         value_type: "float"
-    optional_attributes:
+    attributes:
       - example.string
       - example.int
       - example.float

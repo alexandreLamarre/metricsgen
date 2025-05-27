@@ -516,8 +516,7 @@ func (m *MetricExampleGaugeOptional) init(reg *promsdk.Registry) error {
 			Help: "Example Gauge",
 		},
 		[]string{
-
-			// Optional attributes
+			// Required attributes
 			"example_string", "example_int", "example_float", "example_bool", "example_int64", "example_floatSlice", "example_boolSlice", "example_intSlice", "example_int64Slice", "example_stringSlice",
 		},
 	)
@@ -530,26 +529,28 @@ func (m *MetricExampleGaugeOptional) init(reg *promsdk.Registry) error {
 
 func (m *MetricExampleGaugeOptional) Add(
 	value float64,
+	exampleString string,
+	exampleInt int,
+	exampleFloat float64,
+	exampleBool bool,
+	exampleInt64 int64,
+	exampleFloatSlice []float64,
+	exampleBoolSlice []bool,
+	exampleIntSlice []int,
+	exampleInt64Slice []int64,
+	exampleStringSlice []string,
 	attributeOpts ...AttributeExampleGaugeOptionalOption,
 ) {
 	options := &AttributeExampleGaugeOptionalOptions{}
 	options.Apply(attributeOpts...)
 	m.Data.WithLabelValues(
-		append(toString(), options.Labels()...)...,
+		append(toString(
+			exampleString, exampleInt, exampleFloat, exampleBool, exampleInt64, exampleFloatSlice, exampleBoolSlice, exampleIntSlice, exampleInt64Slice, exampleStringSlice,
+		), options.Labels()...)...,
 	).Add(float64(value))
 }
 
 type AttributeExampleGaugeOptionalOptions struct {
-	exampleString      *string
-	exampleInt         *int
-	exampleFloat       *float64
-	exampleBool        *bool
-	exampleInt64       *int64
-	exampleFloatSlice  *[]float64
-	exampleBoolSlice   *[]bool
-	exampleIntSlice    *[]int
-	exampleInt64Slice  *[]int64
-	exampleStringSlice *[]string
 }
 
 type AttributeExampleGaugeOptionalOption func(*AttributeExampleGaugeOptionalOptions)
@@ -562,127 +563,7 @@ func (o *AttributeExampleGaugeOptionalOptions) Apply(opts ...AttributeExampleGau
 
 func (o *AttributeExampleGaugeOptionalOptions) Labels() []string {
 	ret := []any{}
-	if o.exampleString != nil {
-		ret = append(ret, *o.exampleString)
-	}
-	if o.exampleInt != nil {
-		ret = append(ret, *o.exampleInt)
-	}
-	if o.exampleFloat != nil {
-		ret = append(ret, *o.exampleFloat)
-	}
-	if o.exampleBool != nil {
-		ret = append(ret, *o.exampleBool)
-	}
-	if o.exampleInt64 != nil {
-		ret = append(ret, *o.exampleInt64)
-	}
-	if o.exampleFloatSlice != nil {
-		ret = append(ret, *o.exampleFloatSlice)
-	}
-	if o.exampleBoolSlice != nil {
-		ret = append(ret, *o.exampleBoolSlice)
-	}
-	if o.exampleIntSlice != nil {
-		ret = append(ret, *o.exampleIntSlice)
-	}
-	if o.exampleInt64Slice != nil {
-		ret = append(ret, *o.exampleInt64Slice)
-	}
-	if o.exampleStringSlice != nil {
-		ret = append(ret, *o.exampleStringSlice)
-	}
 	return toString(ret...)
-}
-
-// WithExampleGaugeOptionalExampleString sets the optional example_string attribute
-// corresponding to Example string value
-func WithExampleGaugeOptionalExampleString(exampleString string) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleString
-		o.exampleString = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleInt sets the optional example_int attribute
-// corresponding to Example int value
-func WithExampleGaugeOptionalExampleInt(exampleInt int) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleInt
-		o.exampleInt = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleFloat sets the optional example_float attribute
-// corresponding to Example float value
-func WithExampleGaugeOptionalExampleFloat(exampleFloat float64) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleFloat
-		o.exampleFloat = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleBool sets the optional example_bool attribute
-// corresponding to Example boolean value
-func WithExampleGaugeOptionalExampleBool(exampleBool bool) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleBool
-		o.exampleBool = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleInt64 sets the optional example_int64 attribute
-// corresponding to Example int64 value
-func WithExampleGaugeOptionalExampleInt64(exampleInt64 int64) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleInt64
-		o.exampleInt64 = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleFloatSlice sets the optional example_floatSlice attribute
-// corresponding to Example float slice value
-func WithExampleGaugeOptionalExampleFloatSlice(exampleFloatSlice []float64) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleFloatSlice
-		o.exampleFloatSlice = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleBoolSlice sets the optional example_boolSlice attribute
-// corresponding to Example bool slice value
-func WithExampleGaugeOptionalExampleBoolSlice(exampleBoolSlice []bool) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleBoolSlice
-		o.exampleBoolSlice = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleIntSlice sets the optional example_intSlice attribute
-// corresponding to Example int slice value
-func WithExampleGaugeOptionalExampleIntSlice(exampleIntSlice []int) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleIntSlice
-		o.exampleIntSlice = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleInt64Slice sets the optional example_int64Slice attribute
-// corresponding to Example int64 slice value
-func WithExampleGaugeOptionalExampleInt64Slice(exampleInt64Slice []int64) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleInt64Slice
-		o.exampleInt64Slice = val
-	}
-}
-
-// WithExampleGaugeOptionalExampleStringSlice sets the optional example_stringSlice attribute
-// corresponding to Example int slice value
-func WithExampleGaugeOptionalExampleStringSlice(exampleStringSlice []string) AttributeExampleGaugeOptionalOption {
-	return func(o *AttributeExampleGaugeOptionalOptions) {
-		val := &exampleStringSlice
-		o.exampleStringSlice = val
-	}
 }
 
 // MetricExampleHistogram Example Histogram
@@ -695,9 +576,6 @@ func (m *MetricExampleHistogram) init(reg *promsdk.Registry) error {
 		promsdk.HistogramOpts{
 			Name: "example_histogram_milliseconds",
 			Help: "Example Histogram",
-			Buckets: []float64{
-				1, 2, 3, 4,
-			},
 		},
 		[]string{
 			// Required attributes
@@ -827,8 +705,7 @@ func (m *MetricExampleHistogramOptional) init(reg *promsdk.Registry) error {
 			Help: "Example Histogram",
 		},
 		[]string{
-
-			// Optional attributes
+			// Required attributes
 			"example_string", "example_int", "example_float", "example_bool", "example_int64", "example_floatSlice", "example_boolSlice", "example_intSlice", "example_int64Slice", "example_stringSlice",
 		},
 	)
@@ -841,26 +718,28 @@ func (m *MetricExampleHistogramOptional) init(reg *promsdk.Registry) error {
 
 func (m *MetricExampleHistogramOptional) Observe(
 	value float64,
+	exampleString string,
+	exampleInt int,
+	exampleFloat float64,
+	exampleBool bool,
+	exampleInt64 int64,
+	exampleFloatSlice []float64,
+	exampleBoolSlice []bool,
+	exampleIntSlice []int,
+	exampleInt64Slice []int64,
+	exampleStringSlice []string,
 	attributeOpts ...AttributeExampleHistogramOptionalOption,
 ) {
 	options := &AttributeExampleHistogramOptionalOptions{}
 	options.Apply(attributeOpts...)
 	m.Data.WithLabelValues(
-		append(toString(), options.Labels()...)...,
+		append(toString(
+			exampleString, exampleInt, exampleFloat, exampleBool, exampleInt64, exampleFloatSlice, exampleBoolSlice, exampleIntSlice, exampleInt64Slice, exampleStringSlice,
+		), options.Labels()...)...,
 	).Observe(float64(value))
 }
 
 type AttributeExampleHistogramOptionalOptions struct {
-	exampleString      *string
-	exampleInt         *int
-	exampleFloat       *float64
-	exampleBool        *bool
-	exampleInt64       *int64
-	exampleFloatSlice  *[]float64
-	exampleBoolSlice   *[]bool
-	exampleIntSlice    *[]int
-	exampleInt64Slice  *[]int64
-	exampleStringSlice *[]string
 }
 
 type AttributeExampleHistogramOptionalOption func(*AttributeExampleHistogramOptionalOptions)
@@ -873,125 +752,5 @@ func (o *AttributeExampleHistogramOptionalOptions) Apply(opts ...AttributeExampl
 
 func (o *AttributeExampleHistogramOptionalOptions) Labels() []string {
 	ret := []any{}
-	if o.exampleString != nil {
-		ret = append(ret, *o.exampleString)
-	}
-	if o.exampleInt != nil {
-		ret = append(ret, *o.exampleInt)
-	}
-	if o.exampleFloat != nil {
-		ret = append(ret, *o.exampleFloat)
-	}
-	if o.exampleBool != nil {
-		ret = append(ret, *o.exampleBool)
-	}
-	if o.exampleInt64 != nil {
-		ret = append(ret, *o.exampleInt64)
-	}
-	if o.exampleFloatSlice != nil {
-		ret = append(ret, *o.exampleFloatSlice)
-	}
-	if o.exampleBoolSlice != nil {
-		ret = append(ret, *o.exampleBoolSlice)
-	}
-	if o.exampleIntSlice != nil {
-		ret = append(ret, *o.exampleIntSlice)
-	}
-	if o.exampleInt64Slice != nil {
-		ret = append(ret, *o.exampleInt64Slice)
-	}
-	if o.exampleStringSlice != nil {
-		ret = append(ret, *o.exampleStringSlice)
-	}
 	return toString(ret...)
-}
-
-// WithExampleHistogramOptionalExampleString sets the optional example_string attribute
-// corresponding to Example string value
-func WithExampleHistogramOptionalExampleString(exampleString string) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleString
-		o.exampleString = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleInt sets the optional example_int attribute
-// corresponding to Example int value
-func WithExampleHistogramOptionalExampleInt(exampleInt int) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleInt
-		o.exampleInt = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleFloat sets the optional example_float attribute
-// corresponding to Example float value
-func WithExampleHistogramOptionalExampleFloat(exampleFloat float64) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleFloat
-		o.exampleFloat = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleBool sets the optional example_bool attribute
-// corresponding to Example boolean value
-func WithExampleHistogramOptionalExampleBool(exampleBool bool) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleBool
-		o.exampleBool = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleInt64 sets the optional example_int64 attribute
-// corresponding to Example int64 value
-func WithExampleHistogramOptionalExampleInt64(exampleInt64 int64) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleInt64
-		o.exampleInt64 = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleFloatSlice sets the optional example_floatSlice attribute
-// corresponding to Example float slice value
-func WithExampleHistogramOptionalExampleFloatSlice(exampleFloatSlice []float64) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleFloatSlice
-		o.exampleFloatSlice = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleBoolSlice sets the optional example_boolSlice attribute
-// corresponding to Example bool slice value
-func WithExampleHistogramOptionalExampleBoolSlice(exampleBoolSlice []bool) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleBoolSlice
-		o.exampleBoolSlice = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleIntSlice sets the optional example_intSlice attribute
-// corresponding to Example int slice value
-func WithExampleHistogramOptionalExampleIntSlice(exampleIntSlice []int) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleIntSlice
-		o.exampleIntSlice = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleInt64Slice sets the optional example_int64Slice attribute
-// corresponding to Example int64 slice value
-func WithExampleHistogramOptionalExampleInt64Slice(exampleInt64Slice []int64) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleInt64Slice
-		o.exampleInt64Slice = val
-	}
-}
-
-// WithExampleHistogramOptionalExampleStringSlice sets the optional example_stringSlice attribute
-// corresponding to Example int slice value
-func WithExampleHistogramOptionalExampleStringSlice(exampleStringSlice []string) AttributeExampleHistogramOptionalOption {
-	return func(o *AttributeExampleHistogramOptionalOptions) {
-		val := &exampleStringSlice
-		o.exampleStringSlice = val
-	}
 }

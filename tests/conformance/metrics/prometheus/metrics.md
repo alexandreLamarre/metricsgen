@@ -102,16 +102,16 @@ Some extra details about what the Example Gauge represents and how it is collect
 
 | Name | Prometheus label | Description | Type | Required |
 |------| ---------------- |-------------|------| ------- |
-| example.bool | example_bool | Example boolean value | bool | ❌ |
-| example.boolSlice | example_boolSlice | Example bool slice value | []bool | ❌ |
-| example.float | example_float | Example float value | float64 | ❌ |
-| example.floatSlice | example_floatSlice | Example float slice value | []float64 | ❌ |
-| example.int | example_int | Example int value | int | ❌ |
-| example.int64 | example_int64 | Example int64 value | int64 | ❌ |
-| example.int64Slice | example_int64Slice | Example int64 slice value | []int64 | ❌ |
-| example.intSlice | example_intSlice | Example int slice value | []int | ❌ |
-| example.string | example_string | Example string value | string | ❌ |
-| example.stringSlice | example_stringSlice | Example int slice value | []string | ❌ |
+| example.bool | example_bool | Example boolean value | bool | ✅ |
+| example.boolSlice | example_boolSlice | Example bool slice value | []bool | ✅ |
+| example.float | example_float | Example float value | float64 | ✅ |
+| example.floatSlice | example_floatSlice | Example float slice value | []float64 | ✅ |
+| example.int | example_int | Example int value | int | ✅ |
+| example.int64 | example_int64 | Example int64 value | int64 | ✅ |
+| example.int64Slice | example_int64Slice | Example int64 slice value | []int64 | ✅ |
+| example.intSlice | example_intSlice | Example int slice value | []int | ✅ |
+| example.string | example_string | Example string value | string | ✅ |
+| example.stringSlice | example_stringSlice | Example int slice value | []string | ✅ |
 
 
 ## example.histogram
@@ -180,14 +180,14 @@ Some extra details about what the Example Histogram represents and how it is col
 
 | Name | Prometheus label | Description | Type | Required |
 |------| ---------------- |-------------|------| ------- |
-| example.bool | example_bool | Example boolean value | bool | ❌ |
-| example.boolSlice | example_boolSlice | Example bool slice value | []bool | ❌ |
-| example.float | example_float | Example float value | float64 | ❌ |
-| example.floatSlice | example_floatSlice | Example float slice value | []float64 | ❌ |
-| example.int | example_int | Example int value | int | ❌ |
-| example.int64 | example_int64 | Example int64 value | int64 | ❌ |
-| example.int64Slice | example_int64Slice | Example int64 slice value | []int64 | ❌ |
-| example.intSlice | example_intSlice | Example int slice value | []int | ❌ |
-| example.string | example_string | Example string value | string | ❌ |
-| example.stringSlice | example_stringSlice | Example int slice value | []string | ❌ |
+| example.bool | example_bool | Example boolean value | bool | ✅ |
+| example.boolSlice | example_boolSlice | Example bool slice value | []bool | ✅ |
+| example.float | example_float | Example float value | float64 | ✅ |
+| example.floatSlice | example_floatSlice | Example float slice value | []float64 | ✅ |
+| example.int | example_int | Example int value | int | ✅ |
+| example.int64 | example_int64 | Example int64 value | int64 | ✅ |
+| example.int64Slice | example_int64Slice | Example int64 slice value | []int64 | ✅ |
+| example.intSlice | example_intSlice | Example int slice value | []int | ✅ |
+| example.string | example_string | Example string value | string | ✅ |
+| example.stringSlice | example_stringSlice | Example int slice value | []string | ✅ |
 

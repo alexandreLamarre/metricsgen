@@ -3,7 +3,7 @@ package benchmark_test
 import (
 	"testing"
 
-	benchmark "github.com/alexandreLamarre/metricsgen/examples/benchmark/prometheus"
+	benchmark "github.com/alexandreLamarre/metricsgen/tests/benchmark/prometheus"
 	promsdk "github.com/prometheus/client_golang/prometheus"
 )
 
