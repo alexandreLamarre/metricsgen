@@ -35,7 +35,7 @@ jobs:
       - name : Build
         run : make build
       - name : Generate
-        run : go generate ./...
+        run : make generate
       - name: Validate no file changes
         run: |
             if [[ -n "$(git status --porcelain)" ]]; then
@@ -44,4 +44,4 @@ jobs:
             exit 1
             fi
       - name : Test
-        run : go test -v -timeout 30s -race ./...
+        run : make test
