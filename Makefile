@@ -10,4 +10,4 @@ build:
 generate: build
 	LOG_LEVEL=error go generate ./...
 benchmark: generate
-	go test -benchmem -benchtime=2s -bench=Benchmark $(PROFILE_FLAGS) -timeout=30s ./examples/benchmark/$(BENCH_TARGET)
+	go test -benchmem -benchtime=2s -bench=Benchmark $(PROFILE_FLAGS) -timeout=30s ./tests/benchmark/$(BENCH_TARGET)
