@@ -320,6 +320,13 @@ func (m Metric) ToTemplateDefinition(driver string, attrTable map[string]*Attrib
 	buckets := []float64{}
 	if m.MetricTypeHist != nil {
 		buckets = m.Buckets
+		// for conformance set the default otel buckets to the prometheus default ones
+		if driver == "otel" && len(buckets) == 0 {
+			// this corresponds to the default prometheus/client_golang.DefBuckets
+			// we avoid importing it to not have metricsgen dependent on it.
+			// conformance tests should catch if the upstream sets this to a different value
+			buckets = []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
+		}
 	}
 	name := m.Name
 	if driver == "prometheus" {

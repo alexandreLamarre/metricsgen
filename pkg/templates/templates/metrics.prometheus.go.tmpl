@@ -177,6 +177,9 @@ func (m *Metric{{ $metricStructName }}) init(reg *promsdk.Registry) error {
         promsdk.{{$def.MetricType}}Opts{
             Name : "{{ $def.Name }}",
             Help : "{{ $def.Description }}",
+            {{ if ne (len $def.Buckets) 0 }}Buckets: []float64{
+              {{range $def.Buckets}} {{ . }}, {{end}}
+            },{{end}}
         },
         []string{ 
             {{ if gt (len $def.RequiredAttributes) 0 }}// Required attributes {{ end }}

@@ -76,6 +76,7 @@ func (m *MetricDummyTcpConnlat) init(meter otelmetricsdk.Meter) error {
 		"dummy.tcp.connlat",
 		otelmetricsdk.WithDescription("TCP connection latency ms"),
 		otelmetricsdk.WithUnit("ms"),
+		otelmetricsdk.WithExplicitBucketBoundaries(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10),
 	)
 	return err
 }
