@@ -5,7 +5,7 @@ before:
     - go mod tidy
 builds:
     - id: metricsgen
-      main: main.go
+      main: ./cmd/metricsgen/main.go
       goos:
         - linux
         - darwin

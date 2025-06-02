@@ -6,7 +6,7 @@ endif
 BENCH_TARGET?=otel
 
 build:
-	go build -o ./bin/metricsgen main.go
+	go build -o ./bin/metricsgen cmd/metricsgen/main.go
 generate: build
 	cd examples && LOG_LEVEL=error go generate ./...
 	cd tests && LOG_LEVEL=error go generate ./...

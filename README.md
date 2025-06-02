@@ -13,9 +13,41 @@ Can be set via the `--driver` flag
 
 :warning: Generated prometheus doc names may not be consistent with otel sdk's `go.opentelemetry.io/otel/exporters/prometheus`, see https://github.com/open-telemetry/opentelemetry-go/issues/6704
 
-## Install
+## Usage
 
-Two installation methods are supported:
+### Via go generate
+
+Using the `metricsgen` CLI during go generate : 
+
+```go
+//go:generate metricsgen metrics.yaml
+package example
+```
+
+### Via go script
+
+Using the `metricsgen` SDK:
+
+```go
+package main
+import (
+    "github.com/alexandreLamarre/metricsgen"
+)
+
+
+func main() {
+    if err :=  metricsgen.Run(metricsgen.RunOptions{
+        // ...
+    }); err != nil {
+        // ...`
+    }
+
+}
+```
+
+## CLI Install
+
+Two installation methods for CLI:
 
 - Install from github releases 
 - using go's 1.24 tool directive.
@@ -62,9 +94,10 @@ metrics:
         optional_attributes : [label.optional]
 ```
 
-Which allows you to create type-safe metrics instrumentation:
+Which allows you to create type-safe metrics instrumentation using one of the specified drivers:
 
 ```go
+// Otel driver
 meter := otel.Meter("example-metrics")
 metrics, _ := example.NewMetrics(meter)
 // records a value for the metric `example.measurement`
@@ -80,9 +113,29 @@ metrics.ExampleMeasurement.Record(
 )
 ```
 
+
+```go
+// prometheus driver
+reg := prometheus.NewRegistry()
+metrics, _ := example.NewPrometheusMetrics(reg)
+metrics.ExampleMeasurement.Add(
+    0.1,
+    // sets label=labelA
+    "labelA",
+    // sets state="on"
+    example.EnumStateOn,
+    // sets label.optional=labelB
+    metrics.WithExampleMeasurementLabelOptional("labelB"),
+)
+```
+
 Check `examples` folder for more comprehensive examples
 
-## Attributes
+## Configuration
+
+Names/IDs use the [open telemetry naming conventions](https://opentelemetry.io/docs/specs/semconv/general/naming/), e.g `service.version`. When using the prometheus driver, these are automatically translated to the (previously-enforced) [prometheus naming conventions](https://prometheus.io/docs/practices/naming/)
+
+### Attributes
 
 Attributes are defined as follows:
 ```yaml
@@ -97,7 +150,7 @@ attributes:
         enum : [A,B,C]
 ```
 
-## Metrics
+### Metrics
 
 Metrics are defined as follows:
 ```yaml
@@ -134,6 +187,7 @@ metrics:
         histogram:
             # required, can only be int,float,int64,float64
             value_type: int
+            # optional declaration of bucket boundaries
             buckets: [0.0, 1.2, 5.6, 1000, 100000.7]
 ```
 
