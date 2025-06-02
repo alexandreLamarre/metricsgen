@@ -99,7 +99,6 @@ func (m *MetricExampleCounter) init(meter otelmetricsdk.Meter) error {
 	m.data, err = meter.Int64Counter(
 		"example.counter",
 		otelmetricsdk.WithDescription("Example Counter"),
-		otelmetricsdk.WithUnit("unit"),
 	)
 	return err
 }
@@ -185,7 +184,6 @@ func (m *MetricExampleCounterOptional) init(meter otelmetricsdk.Meter) error {
 	m.data, err = meter.Int64Counter(
 		"example.counter.optional",
 		otelmetricsdk.WithDescription("Example Counter"),
-		otelmetricsdk.WithUnit("unit"),
 	)
 	return err
 }
@@ -364,7 +362,6 @@ func (m *MetricExampleGauge) init(meter otelmetricsdk.Meter) error {
 	m.data, err = meter.Float64Gauge(
 		"example.gauge",
 		otelmetricsdk.WithDescription("Example Gauge"),
-		otelmetricsdk.WithUnit("unit"),
 	)
 	return err
 }
@@ -444,7 +441,6 @@ func (m *MetricExampleGaugeOptional) init(meter otelmetricsdk.Meter) error {
 	m.data, err = meter.Float64Gauge(
 		"example.gauge.optional",
 		otelmetricsdk.WithDescription("Example Gauge"),
-		otelmetricsdk.WithUnit("unit"),
 	)
 	return err
 }
@@ -524,7 +520,6 @@ func (m *MetricExampleHistogram) init(meter otelmetricsdk.Meter) error {
 	m.data, err = meter.Float64Histogram(
 		"example.histogram",
 		otelmetricsdk.WithDescription("Example Histogram"),
-		otelmetricsdk.WithUnit("ms"),
 		otelmetricsdk.WithExplicitBucketBoundaries(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10),
 	)
 	return err
@@ -605,7 +600,6 @@ func (m *MetricExampleHistogramCustomized) init(meter otelmetricsdk.Meter) error
 	m.data, err = meter.Float64Histogram(
 		"example.histogram.customized",
 		otelmetricsdk.WithDescription("Example Exponential Histogram"),
-		otelmetricsdk.WithUnit("ms"),
 		otelmetricsdk.WithExplicitBucketBoundaries(1, 2, 3, 4),
 	)
 	return err

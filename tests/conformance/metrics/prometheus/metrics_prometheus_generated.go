@@ -574,7 +574,7 @@ type MetricExampleHistogram struct {
 func (m *MetricExampleHistogram) init(reg *promsdk.Registry) error {
 	data := promsdk.NewHistogramVec(
 		promsdk.HistogramOpts{
-			Name: "example_histogram_milliseconds",
+			Name: "example_histogram",
 			Help: "Example Histogram",
 		},
 		[]string{
@@ -636,7 +636,7 @@ type MetricExampleHistogramCustomized struct {
 func (m *MetricExampleHistogramCustomized) init(reg *promsdk.Registry) error {
 	data := promsdk.NewHistogramVec(
 		promsdk.HistogramOpts{
-			Name: "example_histogram_customized_milliseconds",
+			Name: "example_histogram_customized",
 			Help: "Example Exponential Histogram",
 			Buckets: []float64{
 				1, 2, 3, 4,

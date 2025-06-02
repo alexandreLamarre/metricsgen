@@ -16,7 +16,7 @@ Some extra details about what the Example Counter represents and how it is colle
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_counter_total | unit | Counter | int|
+| example_counter_unit_total | unit | Counter | int|
 
 ### Attributes
 
@@ -42,7 +42,7 @@ Some extra details about what the Example Counter represents and how it is colle
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_counter_optional_total | unit | Counter | int|
+| example_counter_optional_unit_total | unit | Counter | int|
 
 ### Attributes
 
@@ -94,7 +94,7 @@ Some extra details about what the Example Gauge represents and how it is collect
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_gauge | unit | Gauge | float|
+| example_gauge_unit | unit | Gauge | float|
 
 ### Attributes
 
@@ -120,7 +120,7 @@ Some extra details about what the Example Gauge represents and how it is collect
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_gauge_optional | unit | Gauge | float|
+| example_gauge_optional_unit | unit | Gauge | float|
 
 ### Attributes
 

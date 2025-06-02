@@ -16,7 +16,7 @@ Some extra details about what the Example Counter represents and how it is colle
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_counter_total | unit | Counter | int|
+| example_counter_total |  | Counter | int|
 
 ### Attributes
 
@@ -44,7 +44,7 @@ Some extra details about what the Example Counter represents and how it is colle
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_counter_optional_total | unit | Counter | int|
+| example_counter_optional_total |  | Counter | int|
 
 ### Attributes
 
@@ -70,7 +70,7 @@ Some extra details about what the Example Gauge represents and how it is collect
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_gauge | unit | Gauge | float|
+| example_gauge |  | Gauge | float|
 
 ### Attributes
 
@@ -96,7 +96,7 @@ Some extra details about what the Example Gauge represents and how it is collect
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_gauge_optional | unit | Gauge | float|
+| example_gauge_optional |  | Gauge | float|
 
 ### Attributes
 
@@ -122,7 +122,7 @@ Some extra details about what the Example Histogram represents and how it is col
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_histogram_milliseconds | ms | Histogram | float|
+| example_histogram |  | Histogram | float|
 
 ### Attributes
 
@@ -148,7 +148,7 @@ Example Exponential Histogram
 
 | Prometheus name | Unit | Metric Type | ValueType |
 | --------------- |  ---- | ------------ | --------- |
-| example_histogram_customized_milliseconds | ms | Histogram | float|
+| example_histogram_customized |  | Histogram | float|
 
 ### Attributes
 
