@@ -4,6 +4,36 @@
 
 A go generate tool for generating type safe metric instrumentation scaffholding and matching metric documentation.
 
+## Supported drivers
+
+Can be set via the `--driver` flag
+
+- `prometheus`: instrumentation using `github.com/prometheus/client_golang`
+- `otel` : instrumentation using `go.opentelemetry.io/otel`
+
+:warning: Generated prometheus doc names may not be consistent with otel sdk's `go.opentelemetry.io/otel/exporters/prometheus`, see https://github.com/open-telemetry/opentelemetry-go/issues/6704
+
+## Install
+
+Two installation methods are supported:
+
+- Install from github releases 
+- using go's 1.24 tool directive.
+
+using tool directive:
+
+```go.mod
+require(
+    github.com/alexandreLamarre/metricsgen v0.4.0
+)
+
+tool github.com/alexandreLamarre/metricsgen
+```
+
+```sh
+go install tool
+```
+
 ## Example Usage
 
 ```go
@@ -112,3 +142,4 @@ metrics:
 - Generated prometheus code utils for type-safe [Perses](https://perses.dev/) dashboards.
 - Customizing some cli output options
 - Type-safe garbage-collected metrics / type-safe observable implementation
+- (Maybe) pdata generation for use directly in open-telemetry collector
