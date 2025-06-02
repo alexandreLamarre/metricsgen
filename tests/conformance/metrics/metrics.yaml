@@ -43,7 +43,7 @@ metrics:
   example.counter:
     short: Example Counter
     long: Some extra details about what the Example Counter represents and how it is collected.
-    unit : unit
+    # unit : unit
     counter:
       value_type: "int"
     attributes:
@@ -62,7 +62,7 @@ metrics:
   example.counter.optional:
     short: Example Counter
     long: Some extra details about what the Example Counter represents and how it is collected.
-    unit : unit
+    # unit : unit
     counter:
       value_type: "int"
     optional_attributes:
@@ -80,7 +80,7 @@ metrics:
   example.gauge:
     short: Example Gauge
     long: Some extra details about what the Example Gauge represents and how it is collected.
-    unit : unit
+    # unit : unit
     gauge:
       value_type: "float"
     attributes:
@@ -97,7 +97,7 @@ metrics:
   example.gauge.optional:
     short: Example Gauge
     long: Some extra details about what the Example Gauge represents and how it is collected.
-    unit : unit
+    # unit : unit
     gauge:
       value_type: "float"
     attributes:
@@ -114,7 +114,7 @@ metrics:
   example.histogram:
     short: Example Histogram
     long : "Some extra details about what the Example Histogram represents and how it is collected."
-    unit: ms
+    # unit: ms
     histogram:
         value_type: "float"
     attributes:
@@ -148,7 +148,7 @@ metrics:
   example.histogram.customized:
     short: Example Exponential Histogram
     long: ""
-    unit: ms
+    # unit: ms
     histogram:
         value_type: "float"
         buckets : [1,2,3,4]

@@ -205,7 +205,7 @@ type MetricExampleCounter struct {
 func (m *MetricExampleCounter) init(reg *promsdk.Registry) error {
 	data := promsdk.NewCounterVec(
 		promsdk.CounterOpts{
-			Name: "example_counter_unit_total",
+			Name: "example_counter_total",
 			Help: "Example Counter",
 		},
 		[]string{
@@ -269,7 +269,7 @@ type MetricExampleCounterOptional struct {
 func (m *MetricExampleCounterOptional) init(reg *promsdk.Registry) error {
 	data := promsdk.NewCounterVec(
 		promsdk.CounterOpts{
-			Name: "example_counter_optional_unit_total",
+			Name: "example_counter_optional_total",
 			Help: "Example Counter",
 		},
 		[]string{
@@ -450,7 +450,7 @@ type MetricExampleGauge struct {
 func (m *MetricExampleGauge) init(reg *promsdk.Registry) error {
 	data := promsdk.NewGaugeVec(
 		promsdk.GaugeOpts{
-			Name: "example_gauge_unit",
+			Name: "example_gauge",
 			Help: "Example Gauge",
 		},
 		[]string{
@@ -512,7 +512,7 @@ type MetricExampleGaugeOptional struct {
 func (m *MetricExampleGaugeOptional) init(reg *promsdk.Registry) error {
 	data := promsdk.NewGaugeVec(
 		promsdk.GaugeOpts{
-			Name: "example_gauge_optional_unit",
+			Name: "example_gauge_optional",
 			Help: "Example Gauge",
 		},
 		[]string{
@@ -574,7 +574,7 @@ type MetricExampleHistogram struct {
 func (m *MetricExampleHistogram) init(reg *promsdk.Registry) error {
 	data := promsdk.NewHistogramVec(
 		promsdk.HistogramOpts{
-			Name: "example_histogram_milliseconds",
+			Name: "example_histogram",
 			Help: "Example Histogram",
 		},
 		[]string{
@@ -636,7 +636,7 @@ type MetricExampleHistogramCustomized struct {
 func (m *MetricExampleHistogramCustomized) init(reg *promsdk.Registry) error {
 	data := promsdk.NewHistogramVec(
 		promsdk.HistogramOpts{
-			Name: "example_histogram_customized_milliseconds",
+			Name: "example_histogram_customized",
 			Help: "Example Exponential Histogram",
 			Buckets: []float64{
 				1, 2, 3, 4,
