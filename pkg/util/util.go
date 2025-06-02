@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
+
+	"github.com/prometheus/otlptranslator"
 )
 
 func CapitalizeFirst(s string) string {
@@ -40,20 +42,7 @@ func OtelStringToCamelCaseField(input string) string {
 }
 
 func OtelStringToPromLabel(input string) string {
-	var b strings.Builder
-	for _, r := range input {
-		if unicode.IsUpper(r) {
-			b.WriteRune('_')
-			b.WriteRune(unicode.ToLower(r))
-		} else if r == '.' || r == '-' {
-			b.WriteRune('_')
-		} else if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
-			b.WriteRune(r)
-		}
-	}
-	label := b.String()
-	label = strings.Trim(label, "_")
-	return label
+	return otlptranslator.NormalizeLabel(input)
 }
 
 func ValueTypeToAttributeConstructor(input string) string {

@@ -205,7 +205,7 @@ type MetricExampleCounter struct {
 func (m *MetricExampleCounter) init(reg *promsdk.Registry) error {
 	data := promsdk.NewCounterVec(
 		promsdk.CounterOpts{
-			Name: "example_counter_total",
+			Name: "example_counter_unit_total",
 			Help: "Example Counter",
 		},
 		[]string{
@@ -269,7 +269,7 @@ type MetricExampleCounterOptional struct {
 func (m *MetricExampleCounterOptional) init(reg *promsdk.Registry) error {
 	data := promsdk.NewCounterVec(
 		promsdk.CounterOpts{
-			Name: "example_counter_optional_total",
+			Name: "example_counter_optional_unit_total",
 			Help: "Example Counter",
 		},
 		[]string{
@@ -450,7 +450,7 @@ type MetricExampleGauge struct {
 func (m *MetricExampleGauge) init(reg *promsdk.Registry) error {
 	data := promsdk.NewGaugeVec(
 		promsdk.GaugeOpts{
-			Name: "example_gauge",
+			Name: "example_gauge_unit",
 			Help: "Example Gauge",
 		},
 		[]string{
@@ -512,7 +512,7 @@ type MetricExampleGaugeOptional struct {
 func (m *MetricExampleGaugeOptional) init(reg *promsdk.Registry) error {
 	data := promsdk.NewGaugeVec(
 		promsdk.GaugeOpts{
-			Name: "example_gauge_optional",
+			Name: "example_gauge_optional_unit",
 			Help: "Example Gauge",
 		},
 		[]string{

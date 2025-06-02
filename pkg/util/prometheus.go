@@ -1,63 +1,15 @@
 package util
 
 import (
-	"strings"
-
-	"github.com/prometheus/common/model"
+	"github.com/prometheus/otlptranslator"
 )
-
-var unitSuffixes = map[string]string{
-	// Time
-	"d":   "days",
-	"h":   "hours",
-	"min": "minutes",
-	"s":   "seconds",
-	"ms":  "milliseconds",
-	"us":  "microseconds",
-	"ns":  "nanoseconds",
-
-	// Bytes
-	"By":   "bytes",
-	"KiBy": "kibibytes",
-	"MiBy": "mebibytes",
-	"GiBy": "gibibytes",
-	"TiBy": "tibibytes",
-	"KBy":  "kilobytes",
-	"MBy":  "megabytes",
-	"GBy":  "gigabytes",
-	"TBy":  "terabytes",
-
-	// SI
-	"m": "meters",
-	"V": "volts",
-	"A": "amperes",
-	"J": "joules",
-	"W": "watts",
-	"g": "grams",
-
-	// Misc
-	"Cel": "celsius",
-	"Hz":  "hertz",
-	"1":   "ratio",
-	"%":   "percent",
-}
-
-// prometheus counters MUST have a _total suffix by default:
-// https://github.com/open-telemetry/opentelemetry-specification/blob/v1.20.0/specification/compatibility/prometheus_and_openmetrics.md
-const counterSuffix = "total"
-
-// convertsToUnderscore returns true if the character would be converted to an
-// underscore when the escaping scheme is underscore escaping. This is meant to
-// capture any character that should be considered a "delimiter".
-// ref :https://github.com/open-telemetry/opentelemetry-go/blob/e57879908fbd71f0fe64c4905c579d5827a34779/exporters/prometheus/exporter.go#L521-L526
-func ConvertsToUnderscore(b rune) bool {
-	return (b < 'a' || b > 'z') && (b < 'A' || b > 'Z') && b != ':' && (b < '0' || b > '9')
-}
 
 type PrometheusNameGenerator struct {
 	withoutCounterSuffixes bool
 	namespace              string
 	withoutUnits           bool
+
+	translator *otlptranslator.MetricNamer
 }
 
 func (g *PrometheusNameGenerator) Apply(opts ...PrometheusNameOption) {
@@ -73,6 +25,13 @@ func NewPrometheusNameGenerator(opts ...PrometheusNameOption) *PrometheusNameGen
 	}
 
 	g.Apply(opts...)
+
+	v := &otlptranslator.MetricNamer{
+		Namespace:          g.namespace,
+		WithMetricSuffixes: !g.withoutUnits,
+		UTF8Allowed:        false,
+	}
+	g.translator = v
 	return g
 }
 
@@ -97,30 +56,19 @@ func WithPrometheusNameWithoutUnits(withoutUnits bool) PrometheusNameOption {
 }
 
 func (g *PrometheusNameGenerator) GetPrometheusName(name, unit string, isCounter bool) string {
-	name = model.EscapeName(name, model.NameEscapingScheme)
-	addCounterSuffix := !g.withoutCounterSuffixes && isCounter
-	if addCounterSuffix {
-		// Remove the _total suffix here, as we will re-add the total suffix
-		// later, and it needs to come after the unit suffix.
-		name = strings.TrimSuffix(name, counterSuffix)
-		// If the last character is an underscore, or would be converted to an underscore, trim it from the name.
-		// an underscore will be added back in later.
-		if ConvertsToUnderscore(rune(name[len(name)-1])) {
-			name = name[:len(name)-1]
-		}
-	}
-	if g.namespace != "" {
-		name = g.namespace + name
-	}
-	if suffix, ok := unitSuffixes[unit]; ok && !g.withoutUnits && !strings.HasSuffix(name, suffix) {
-		name += "_" + suffix
-	}
-	if addCounterSuffix {
-		name += "_" + counterSuffix
-	}
-	return name
+	return g.translator.Build(otlptranslator.Metric{
+		Name: name,
+		Unit: unit,
+		Type: func() otlptranslator.MetricType {
+			if isCounter {
+				return otlptranslator.MetricTypeMonotonicCounter
+			} else {
+				return otlptranslator.MetricTypeGauge
+			}
+		}(),
+	})
 }
 
 func GetPrometheusLabel(attrK string) string {
-	return model.EscapeName(attrK, model.NameEscapingScheme)
+	return otlptranslator.NormalizeLabel(attrK)
 }
